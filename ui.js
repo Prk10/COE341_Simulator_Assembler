@@ -479,7 +479,7 @@ function executeReset() {
 
     // 4. Update the UI
     updateUI();
-    resetVisualization(); // Resets the Datapath animation
+    resetAnimations(); // Resets the Datapath animation
     
     // 5. Force Highlight to First Instruction (Address 0)
     highlightCurrentInstruction(0);
@@ -755,6 +755,7 @@ function assembleCode() {
 
         // Display the assembled program in the loaded program section
         displayLoadedProgram(hexOutput);
+        switchView('simulator');
     } else {
         appendToOutput('✗ Assembly failed with errors:');
         result.errors.forEach(error => appendToOutput('  ' + error));

@@ -194,11 +194,11 @@
     
     <div class="w-full md:w-48 mb-4 md:mb-0 p-2 bg-white rounded-lg shadow-md border border-gray-100 flex-shrink-0">
         <h2 class="text-sm font-bold text-gray-800 mb-2">Register/Bus Controls</h2>
-        <div class="text-[0.6rem] text-gray-500 mb-3 italic">
+        <!-- <div class="text-[0.6rem] text-gray-500 mb-3 italic">
             * Click arrows to highlight<br>
             * Click labels to toggle<br>
             * Click Bus to activate
-        </div>
+        </div> -->
         
         <div class="mb-2">
             <h3 class="font-semibold text-gray-600 mb-1 text-[0.65rem]">Bus Source (S2, S1, S0)</h3>
@@ -215,13 +215,13 @@
         <div id="datapath-elements" class="flex items-start justify-between space-x-[180px] relative z-20"
              style="padding-top: var(--register-column-padding-top);">
 
-            <div id="left-bus" class="bus-line-vertical relative flex-shrink-0" onclick="toggleMainBus()"></div>
+            <div id="left-bus" class="bus-line-vertical relative flex-shrink-0"></div>
 
             <div id="registers-column" class="flex flex-col flex-shrink-0" style="gap: 0;">
                 </div>
 
-            <div id="right-bus" class="bus-line-vertical relative flex-shrink-0" onclick="toggleMainBus()">
-                <div id="bus-mux" onclick="toggleMainBus()" class="absolute mux-box rounded-md flex items-center justify-center text-white font-bold top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div id="right-bus" class="bus-line-vertical relative flex-shrink-0">
+                <div id="bus-mux" class="absolute mux-box rounded-md flex items-center justify-center text-white font-bold top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     BUS
                 </div>
             </div>
@@ -330,7 +330,6 @@
                 const alu = document.querySelector('#alu-block');
                 if(alu) alu.classList.add('highlight-active');
 
-                console.log(ALUTransfer);
                 // CONDITIONAL: Highlight Feedback (AC -> ALU) ONLY if ALUTransfer is FALSE (Arithmetic Operation)
                 if (!ALUTransfer) {
                     const acAluLink = document.getElementById('ac-alu-link');
@@ -374,6 +373,13 @@
             if (controlSpan) {
                 controlSpan.innerHTML = `${controlKey}: <span class="font-normal text-white opacity-90">1</span>`;
                 controlSpan.classList.add('control-active');
+            }
+
+            const controlKeyM = 'Read';
+            const controlSpanM = document.querySelector(`[data-reg-id="${sourceName}"] [data-control="${controlKeyM}"]`);
+            if (controlSpanM) {
+                controlSpanM.innerHTML = `${controlKeyM}: <span class="font-normal text-white opacity-90">1</span>`;
+                controlSpanM.classList.add('control-active');
             }
 
             // 6. Update Bus Selection Display (Only if Bus is used)
@@ -498,45 +504,6 @@
         }
     }
 
-    // --- Interaction Functions ---
-    function toggleRegisterHighlight(element) {
-        element.classList.toggle('highlight-active');
-    }
-
-    function toggleMainBus() {
-        isMainBusActive = !isMainBusActive;
-        const method = isMainBusActive ? 'add' : 'remove';
-        
-        // Update UI classes
-        ['left-bus', 'right-bus', 'bus-mux', 'main-bus-path'].forEach(id => {
-            const el = document.getElementById(id);
-            if(el) el.classList[method]('bus-active');
-        });
-    }
-
-    function toggleConnectionLine(element, markerId) {
-        element.classList.toggle('bus-active');
-        const currentMarker = element.getAttribute('marker-end');
-        if (element.classList.contains('bus-active')) {
-            element.setAttribute('marker-end', `url(#${markerId}-active)`);
-        } else {
-            element.setAttribute('marker-end', `url(#${markerId})`);
-        }
-    }
-
-    function toggleControlSignal(regName, signalKey, element) {
-        const regIndex = REGISTER_DATA.findIndex(r => r.shortName === regName);
-        if(regIndex > -1) {
-            const current = REGISTER_DATA[regIndex].controls[signalKey];
-            const next = current === 0 ? 1 : 0;
-            REGISTER_DATA[regIndex].controls[signalKey] = next;
-            
-            element.innerHTML = `${signalKey}: <span class="font-normal text-white opacity-90">${next}</span>`;
-            if(next === 1) element.classList.add('control-active');
-            else element.classList.remove('control-active');
-        }
-    }
-
     function createRegisterElement(reg, index) {
         const regContainer = document.createElement('div');
         regContainer.className = 'relative flex flex-col items-center';
@@ -549,7 +516,6 @@
         regBox.className = `register-box w-full h-full rounded-lg flex flex-col justify-center items-center p-0.5`;
         regBox.onclick = (e) => {
             e.stopPropagation();
-            toggleRegisterHighlight(regBox);
         };
         
         const isSmall = reg.shortName === 'INPR' || reg.shortName === 'OUTR';
@@ -587,7 +553,6 @@
             
             controlSpan.onclick = (e) => {
                 e.stopPropagation();
-                toggleControlSignal(reg.shortName, signal, controlSpan);
             };
             controlsDiv.appendChild(controlSpan);
         });
@@ -630,7 +595,7 @@
         aluDiv.style.left = `${aluLeft}px`;
         aluDiv.style.top = `${aluTop}px`;
         aluDiv.innerHTML = "Adder<br>& Logic";
-        aluDiv.onclick = (e) => { e.stopPropagation(); toggleRegisterHighlight(aluDiv); };
+        aluDiv.onclick = (e) => { e.stopPropagation();};
         datapathWrapper.appendChild(aluDiv);
 
         const eSize = 20;
@@ -646,7 +611,7 @@
         eDiv.style.left = `${eLeft}px`;
         eDiv.style.top = `${eTop}px`;
         eDiv.innerText = "E";
-        eDiv.onclick = (e) => { e.stopPropagation(); toggleRegisterHighlight(eDiv); };
+        eDiv.onclick = (e) => { e.stopPropagation(); };
         datapathWrapper.appendChild(eDiv);
     }
 
@@ -715,7 +680,7 @@
         hBus.setAttribute('y2', hBusCenterY);
         hBus.setAttribute('class', `bus-path ${isMainBusActive ? 'bus-active' : ''}`);
         hBus.style.strokeWidth = `${hBusStrokeWidth}px`;
-        hBus.onclick = (e) => { e.stopPropagation(); toggleMainBus(); };
+        hBus.onclick = (e) => { e.stopPropagation(); };
 
         svg.appendChild(hBus);
 
@@ -728,7 +693,6 @@
             
             path.onclick = (e) => {
                 e.stopPropagation();
-                toggleConnectionLine(path, markerBase);
             };
             
             svg.appendChild(path);
@@ -750,7 +714,6 @@
 
             line.onclick = (e) => {
                 e.stopPropagation();
-                toggleConnectionLine(line, markerBase);
             };
             svg.appendChild(line);
         }
