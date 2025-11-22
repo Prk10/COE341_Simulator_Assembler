@@ -573,3 +573,180 @@ button:active {
 .btn-secondary:hover {
     background-color: #e0e0e0;
 }
+
+/* styles.css - Add these at the bottom */
+
+/* Utility class to hide views */
+.hidden {
+    display: none !important;
+}
+
+/* Style the View Toggle Buttons */
+.view-btn {
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 2px solid #667eea;
+    background-color: transparent;
+    color: #667eea;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Active state (filled color) */
+.view-btn.active {
+    background-color: #667eea;
+    color: white;
+}
+
+.view-btn:hover {
+    background-color: #5a6fd6;
+    color: white;
+    border-color: #5a6fd6;
+}
+
+/* --- New Visual Effects (Stronger Glow) --- */
+
+/* 1. Pulsating Title Animation */
+@keyframes textPulsate {
+    0% {
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+    }
+    50% {
+        transform: scale(1.02);
+        color: #4a5ec6; 
+        text-shadow: 0 0 20px rgba(102, 126, 234, 0.8); /* Stronger text glow */
+    }
+    100% {
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+    }
+}
+
+.pulsate-title {
+    display: inline-block;
+    animation: textPulsate 2s infinite ease-in-out;
+}
+
+/* 2. Blue Glow for Register Box */
+#register-section {
+    /* Thicker border and much stronger shadow */
+    border: 2px solid rgba(33, 150, 243, 0.8) !important;
+    box-shadow: 0 0 25px rgba(33, 150, 243, 0.5), inset 0 0 15px rgba(33, 150, 243, 0.1);
+    transition: all 0.3s ease;
+    position: relative; /* Ensures it sits above other elements */
+    z-index: 1;
+}
+
+#register-section:hover {
+    box-shadow: 0 0 40px rgba(33, 150, 243, 0.8), inset 0 0 20px rgba(33, 150, 243, 0.2);
+    transform: translateY(-2px); /* Slight pop-up effect */
+}
+
+/* 3. Pink/Purple Glow for Memory Box */
+#memory-section {
+    /* Thicker border and much stronger shadow */
+    border: 2px solid rgba(233, 30, 99, 0.8) !important;
+    box-shadow: 0 0 25px rgba(233, 30, 99, 0.5), inset 0 0 15px rgba(233, 30, 99, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+#memory-section:hover {
+    box-shadow: 0 0 40px rgba(233, 30, 99, 0.8), inset 0 0 20px rgba(233, 30, 99, 0.2);
+    transform: translateY(-2px); /* Slight pop-up effect */
+}
+
+/* 4. Purple Glow for Header Box */
+#header-box {
+    /* Thicker border and strong shadow */
+    border: 2px solid rgba(102, 126, 234, 0.8) !important; /* Purple border */
+    box-shadow: 0 0 25px rgba(87, 116, 243, 0.619), inset 0 0 15px rgba(102, 126, 234, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    text-align: center; /* Ensure content is centered */
+    padding: 25px !important; /* Add some padding */
+    margin-bottom: 30px; /* Space below it */
+}
+
+/* --- Intro Animation Styles --- */
+
+#intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* Dark deep purple/black */
+    z-index: 9999; /* Ensure it sits on top of everything */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: opacity 0.8s ease-in-out, visibility 0.8s;
+}
+
+/* Class to hide the overlay */
+#intro-overlay.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.intro-content {
+    text-align: center;
+    animation: floatUp 1s ease-out;
+}
+
+.intro-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(102, 126, 234, 0.8), 0 0 40px rgba(102, 126, 234, 0.4);
+    line-height: 1.2;
+}
+
+.intro-subtitle {
+    font-size: 1.5rem;
+    color: #a0aaec;
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+#launch-btn {
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+    background: transparent;
+    border: 2px solid #667eea;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+    animation: pulseBtn 2s infinite;
+}
+
+#launch-btn:hover {
+    background: #667eea;
+    box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+    transform: scale(1.05);
+}
+
+/* Keyframes */
+@keyframes floatUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulseBtn {
+    0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(102, 126, 234, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0); }
+}

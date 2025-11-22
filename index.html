@@ -11,118 +11,240 @@
     <script src="ui.js"></script>
 </head>
 <body>
+    
+    <div id="intro-overlay">
+        <div class="intro-content">
+            <h1 class="intro-title">Welcome to<br>Mano's Basic Computer Simulator</h1>
+            <p class="intro-subtitle">COE 341 Project</p>
+            <button id="launch-btn" onclick="launchSimulator()">Launch Simulator</button>
+        </div>
+    </div>
+
     <div class="container">
-        <header>
-            <h1>Mano's Basic Computer Simulator</h1>
+        <header id="header-box">
+            <h1 class="pulsate-title">Mano's Basic Computer Simulator</h1>
             <p>COE 341 Project - Interactive Web-Based Simulator</p>
+
+            <div class="view-controls" style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+                <button id="btn-view-sim" class="view-btn active" onclick="switchView('simulator')">Simulator</button>
+                <button id="btn-view-asm" class="view-btn" onclick="switchView('assembler')">Assembler</button>
+            </div>
         </header>
 
-        <div class="main-content">
-            <!-- Left Panel: Computer Visualization -->
-            <div class="left-panel">
-                <div class="section">
-                    <h2>Computer Architecture</h2>
-                    <!-- The container for the visualization -->
-                    <div class="datapath-diagram">
-                        <!-- The iframe loads the entire interactive tool, including controls and details -->
-                        <iframe 
-                            src="CompleteDatapath.html" 
-                            width="100%" 
-                            height="720px" 
-                            style="border: none; overflow: hidden; border-radius: 8px;">
-                        </iframe>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h3>Register Details</h3>
-                    <div class="register-details">
-                        <div class="reg-row">
-                            <span class="reg-name">AC:</span>
-                            <span class="reg-hex" id="ac-detail-hex">0x0000</span>
-                            <span class="reg-bin" id="ac-detail-bin">0000000000000000</span>
-                            <span class="reg-dec" id="ac-detail-dec">(0)</span>
-                        </div>
-                        <div class="reg-row">
-                            <span class="reg-name">DR:</span>
-                            <span class="reg-hex" id="dr-detail-hex">0x0000</span>
-                            <span class="reg-bin" id="dr-detail-bin">0000000000000000</span>
-                            <span class="reg-dec" id="dr-detail-dec">(0)</span>
-                        </div>
-                        <div class="reg-row">
-                            <span class="reg-name">AR:</span>
-                            <span class="reg-hex" id="ar-detail-hex">0x000</span>
-                            <span class="reg-bin" id="ar-detail-bin">000000000000</span>
-                        </div>
-                        <div class="reg-row">
-                            <span class="reg-name">PC:</span>
-                            <span class="reg-hex" id="pc-detail-hex">0x000</span>
-                            <span class="reg-bin" id="pc-detail-bin">000000000000</span>
-                        </div>
-                        <div class="reg-row">
-                            <span class="reg-name">IR:</span>
-                            <span class="reg-hex" id="ir-detail-hex">0x0000</span>
-                            <span class="reg-bin" id="ir-detail-bin">0000000000000000</span>
-                        </div>
-                        <div class="reg-row">
-                            <span class="reg-name">TR:</span>
-                            <span class="reg-hex" id="tr-detail-hex">0x0000</span>
-                            <span class="reg-bin" id="tr-detail-bin">0000000000000000</span>
-                        </div>
-                        <div class="reg-row flags">
-                            <span class="reg-name">Flags:</span>
-                            <span class="flag">I=<span id="flag-i">0</span></span>
-                            <span class="flag">E=<span id="flag-e">0</span></span>
-                            <span class="flag">S=<span id="flag-s">1</span></span>
-                            <span class="flag">R=<span id="flag-r">0</span></span>
-                            <span class="flag">IEN=<span id="flag-ien">0</span></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Panel: Controls and Console -->
-            <div class="right-panel">
-                <div class="section">
-                    <h2>Program & Data Loading</h2>
-                    <div class="file-inputs">
-                        <div class="file-input-group">
-                            <label for="program-file">Program File (program.txt):</label>
-                            <input type="file" id="program-file" accept=".txt">
-                            <button onclick="loadProgramFile()">Load Program</button>
-                        </div>
-                        <div class="file-input-group">
-                            <label for="data-file">Data File (data.txt):</label>
-                            <input type="file" id="data-file" accept=".txt">
-                            <button onclick="loadDataFile()">Load Data</button>
-                        </div>
-                    </div>
-
-                    <div class="manual-input">
-                        <h4>Or Enter Manually:</h4>
-                        <textarea id="program-input" placeholder="Enter program hex (address instruction)&#10;Example:&#10;000 2004&#10;001 7001"></textarea>
-                        <button onclick="loadProgramManual()">Load Program</button>
-                    </div>
-
-                    <div class="loaded-program-view" style="margin-top: 20px;">
-                        <h4>Loaded Program:</h4>
-                        <pre id="loaded-program-display" class="program-code" 
-                            style="height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px;"></pre>
-                    </div>
-                </div>
-
-                <div class="section">
+        <div id="simulator-view">
+            <div class="main-content">
+                
+                <div class="left-panel">
                     
-                <!-- Assembler Section -->
-                <div class="section">
-                    <h2>Assembler</h2>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
-                        Enter assembly language code. Supported: ORG, END, DEC, HEX, AND, ADD, LDA, STA, BUN, BSA, ISZ, CLA, CLE, CMA, CME, CIR, CIL, INC, SPA, SNA, SZA, SZE, HLT
-                    </p>
+                    <div class="section">
+                        <h2>Computer Architecture</h2>
+                        <div class="datapath-diagram">
+                            <iframe 
+                                src="CompleteDatapath.html" 
+                                width="100%" 
+                                height="720px" 
+                                style="border: none; overflow: hidden; border-radius: 8px;">
+                            </iframe>
+                        </div>
+                    </div>
 
-                    <div class="assembler-input-group">
-                        <label for="assembly-input">Assembly Source Code:</label>
-                        <textarea id="assembly-input" placeholder="Example:
+                    <div class="section" id="register-section">
+                        <h3>Register Details</h3>
+                        <div class="register-details">
+                            <div class="reg-row">
+                                <span class="reg-name">AC:</span>
+                                <span class="reg-hex" id="ac-detail-hex">0x0000</span>
+                                <span class="reg-bin" id="ac-detail-bin">0000000000000000</span>
+                                <span class="reg-dec" id="ac-detail-dec">(0)</span>
+                            </div>
+                            <div class="reg-row">
+                                <span class="reg-name">DR:</span>
+                                <span class="reg-hex" id="dr-detail-hex">0x0000</span>
+                                <span class="reg-bin" id="dr-detail-bin">0000000000000000</span>
+                                <span class="reg-dec" id="dr-detail-dec">(0)</span>
+                            </div>
+                            <div class="reg-row">
+                                <span class="reg-name">AR:</span>
+                                <span class="reg-hex" id="ar-detail-hex">0x000</span>
+                                <span class="reg-bin" id="ar-detail-bin">000000000000</span>
+                            </div>
+                            <div class="reg-row">
+                                <span class="reg-name">PC:</span>
+                                <span class="reg-hex" id="pc-detail-hex">0x000</span>
+                                <span class="reg-bin" id="pc-detail-bin">000000000000</span>
+                            </div>
+                            <div class="reg-row">
+                                <span class="reg-name">IR:</span>
+                                <span class="reg-hex" id="ir-detail-hex">0x0000</span>
+                                <span class="reg-bin" id="ir-detail-bin">0000000000000000</span>
+                            </div>
+                            <div class="reg-row">
+                                <span class="reg-name">TR:</span>
+                                <span class="reg-hex" id="tr-detail-hex">0x0000</span>
+                                <span class="reg-bin" id="tr-detail-bin">0000000000000000</span>
+                            </div>
+                            <div class="reg-row flags">
+                                <span class="reg-name">Flags:</span>
+                                <span class="flag">I=<span id="flag-i">0</span></span>
+                                <span class="flag">E=<span id="flag-e">0</span></span>
+                                <span class="flag">S=<span id="flag-s">1</span></span>
+                                <span class="flag">R=<span id="flag-r">0</span></span>
+                                <span class="flag">IEN=<span id="flag-ien">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section" id="memory-section">
+                        <h2>Memory Viewer</h2>
+                        <div class="memory-controls">
+                            <label>Start Address:</label>
+                            <input type="text" id="mem-start" value="0" placeholder="0x000">
+                            <label>Count:</label>
+                            <input type="number" id="mem-count" value="16" min="1" max="256">
+                            <button onclick="viewMemory()">View Memory</button>
+                        </div>
+                        <div class="memory-view">
+                            <table id="memory-table">
+                                <thead>
+                                    <tr>
+                                        <th>Address</th>
+                                        <th>Hex</th>
+                                        <th>Binary</th>
+                                        <th>Decimal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="memory-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div> 
+                
+                <div class="right-panel">
+                    
+                    <div class="section">
+                        <h2>Program & Data Loading</h2>
+                        <div class="file-inputs">
+                            <div class="file-input-group">
+                                <label for="program-file">Program File (program.txt):</label>
+                                <input type="file" id="program-file" accept=".txt">
+                                <button onclick="loadProgramFile()" style="padding: 5px 15px; cursor: pointer; background-color: #667eea; color: white; border: none; border-radius: 4px;">Load Program</button>
+                            </div>
+                            <div class="file-input-group" style="margin-top: 10px;">
+                                <label for="data-file">Data File (data.txt):</label>
+                                <input type="file" id="data-file" accept=".txt">
+                                <button onclick="loadDataFile()" style="padding: 5px 15px; cursor: pointer; background-color: #667eea; color: white; border: none; border-radius: 4px;">Load Data</button>
+                            </div>
+                        </div>
+
+                        <div class="manual-input">
+                            <h4>Or Enter Manually:</h4>
+                            <textarea id="program-input" placeholder="Enter program hex (address instruction)&#10;Example:&#10;000 2004&#10;001 7001"></textarea>
+                            <button onclick="loadProgramManual()" style="padding: 5px 15px; cursor: pointer; background-color: #667eea; color: white; border: none; border-radius: 4px; margin-top: 5px;">Load Program</button>
+                        </div>
+
+                        <div class="loaded-program-view" style="margin-top: 20px;">
+                            <h4>Loaded Program:</h4>
+                            <pre id="loaded-program-display" class="program-code" 
+                                style="height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px;"></pre>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2>Execution Controls</h2>
+                        <div class="control-buttons">
+                            <button class="btn-primary" onclick="executeNextCycle()">Next Cycle</button>
+                            <button class="btn-primary" onclick="executeFastCycle()">Fast Cycle (N)</button>
+                            <input type="number" id="fast-cycle-n" value="5" min="1" style="width:60px;">
+
+                            <button class="btn-secondary" onclick="executeNextInstruction()">Next Instruction</button>
+                            <button class="btn-secondary" onclick="executeFastInstruction()">Fast Instruction (N)</button>
+                            <input type="number" id="fast-inst-n" value="5" min="1" style="width:60px;">
+
+                            <button class="btn-success" onclick="executeRun()">Run (Until HLT)</button>
+                            <button class="btn-danger" onclick="executeReset()">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2>Current Execution Status</h2>
+                        <div class="execution-status">
+                            <div class="status-line">
+                                <strong>State:</strong> <span id="exec-state">Idle</span>
+                            </div>
+                            <div class="status-line">
+                                <strong>Instruction in hand:</strong> <span id="exec-instruction">N/A</span>
+                            </div>
+                            <div class="status-line">
+                                <strong>Micro-operation:</strong> <span id="exec-microop">N/A</span>
+                            </div>
+                            <div class="status-line">
+                                <strong>Components changed:</strong> <span id="exec-changed">None</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2>Inspection Commands</h2>
+                        <div class="command-input">
+                            <input type="text" id="command-input" placeholder="Enter command (e.g., show AC, show mem 100 5, show all, show profiler)">
+                            <button onclick="executeCommand()">Execute</button>
+                        </div>
+                        <div class="command-output">
+                            <pre id="command-output">Ready for commands...</pre>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2>Profiler Statistics</h2>
+                        <div class="profiler-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Total Cycles:</span>
+                                <span class="stat-value" id="prof-cycles">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Instructions Executed:</span>
+                                <span class="stat-value" id="prof-instructions">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Average CPI:</span>
+                                <span class="stat-value" id="prof-cpi">0.00</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Memory Reads:</span>
+                                <span class="stat-value" id="prof-reads">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Memory Writes:</span>
+                                <span class="stat-value" id="prof-writes">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Total Memory Bandwidth:</span>
+                                <span class="stat-value" id="prof-bandwidth">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div> 
+        
+        <div id="assembler-view" class="hidden">
+            <div class="section" style="max-width: 800px; margin: 0 auto;">
+                <h2>Assembler</h2>
+                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+                    Enter assembly language code. Supported: ORG, END, DEC, HEX, AND, ADD, LDA, STA, BUN, BSA, ISZ, CLA, CLE, CMA, CME, CIR, CIL, INC, SPA, SNA, SZA, SZE, HLT
+                </p>
+
+                <div class="assembler-input-group" style="background: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 15px; display: flex; align-items: center; gap: 15px;">
+                    <label for="asm-file-upload" style="font-weight: 600; margin-bottom: 0;">Load Assembly File:</label>
+                    <input type="file" id="asm-file-upload" accept=".txt,.asm" style="font-size: 14px;">
+                    <button onclick="loadAssemblyFile()" style="padding: 5px 15px; cursor: pointer; background-color: #667eea; color: white; border: none; border-radius: 4px;">Load</button>
+                </div>
+
+                <div class="assembler-input-group">
+                    <label for="assembly-input">Assembly Source Code:</label>
+                    <textarea id="assembly-input" style="width:100%; min-height:300px; padding:10px;" placeholder="Example:
         ORG 100
 START,  LDA NUM1
         ADD NUM2
@@ -132,118 +254,17 @@ NUM1,   DEC 25
 NUM2,   DEC 17
 RESULT, HEX 0
         END"></textarea>
-                    </div>
-
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <button class="btn-primary" onclick="assembleCode()">Assemble & Load</button>
-                        <button class="btn-secondary" onclick="assembleOnly()">Assemble Only</button>
-                        <button class="btn-secondary" onclick="clearAssembler()">Clear</button>
-                    </div>
-
-                    <div id="assembler-output" class="assembler-output"></div>
                 </div>
 
-<h2>Execution Controls</h2>
-                    <div class="control-buttons">
-                        <button class="btn-primary" onclick="executeNextCycle()">Next Cycle</button>
-                        <button class="btn-primary" onclick="executeFastCycle()">Fast Cycle (N)</button>
-                        <input type="number" id="fast-cycle-n" value="5" min="1" style="width:60px;">
-
-                        <button class="btn-secondary" onclick="executeNextInstruction()">Next Instruction</button>
-                        <button class="btn-secondary" onclick="executeFastInstruction()">Fast Instruction (N)</button>
-                        <input type="number" id="fast-inst-n" value="5" min="1" style="width:60px;">
-
-                        <button class="btn-success" onclick="executeRun()">Run (Until HLT)</button>
-                        <button class="btn-danger" onclick="executeReset()">Reset</button>
-                    </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="btn-primary" onclick="assembleCode()">Assemble & Load</button>
+                    <button class="btn-secondary" onclick="assembleOnly()">Assemble Only</button>
+                    <button class="btn-secondary" onclick="clearAssembler()">Clear</button>
                 </div>
 
-                <div class="section">
-                    <h2>Current Execution Status</h2>
-                    <div class="execution-status">
-                        <div class="status-line">
-                            <strong>State:</strong> <span id="exec-state">Idle</span>
-                        </div>
-                        <div class="status-line">
-                            <strong>Instruction in hand:</strong> <span id="exec-instruction">N/A</span>
-                        </div>
-                        <div class="status-line">
-                            <strong>Micro-operation:</strong> <span id="exec-microop">N/A</span>
-                        </div>
-                        <div class="status-line">
-                            <strong>Components changed:</strong> <span id="exec-changed">None</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2>Inspection Commands</h2>
-                    <div class="command-input">
-                        <input type="text" id="command-input" placeholder="Enter command (e.g., show AC, show mem 100 5, show all, show profiler)">
-                        <button onclick="executeCommand()">Execute</button>
-                    </div>
-                    <div class="command-output">
-                        <pre id="command-output">Ready for commands...</pre>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2>Memory Viewer</h2>
-                    <div class="memory-controls">
-                        <label>Start Address:</label>
-                        <input type="text" id="mem-start" value="0" placeholder="0x000">
-                        <label>Count:</label>
-                        <input type="number" id="mem-count" value="16" min="1" max="256">
-                        <button onclick="viewMemory()">View Memory</button>
-                    </div>
-                    <div class="memory-view">
-                        <table id="memory-table">
-                            <thead>
-                                <tr>
-                                    <th>Address</th>
-                                    <th>Hex</th>
-                                    <th>Binary</th>
-                                    <th>Decimal</th>
-                                </tr>
-                            </thead>
-                            <tbody id="memory-tbody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h2>Profiler Statistics</h2>
-                    <div class="profiler-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">Total Cycles:</span>
-                            <span class="stat-value" id="prof-cycles">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Instructions Executed:</span>
-                            <span class="stat-value" id="prof-instructions">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Average CPI:</span>
-                            <span class="stat-value" id="prof-cpi">0.00</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Memory Reads:</span>
-                            <span class="stat-value" id="prof-reads">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Memory Writes:</span>
-                            <span class="stat-value" id="prof-writes">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Total Memory Bandwidth:</span>
-                            <span class="stat-value" id="prof-bandwidth">0</span>
-                        </div>
-                    </div>
-                </div>
+                <div id="assembler-output" class="assembler-output"></div>
             </div>
-        </div>
+        </div> 
     </div>
-
 </body>
 </html>

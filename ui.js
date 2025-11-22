@@ -1,5 +1,7 @@
 // ui.js - User Interface Logic for Basic Computer Simulator
 
+let originalProgramData = []; 
+
 // UI Update Functions
 function updateUI() {
     updateRegisters();
@@ -189,6 +191,26 @@ function loadDataFile() {
     reader.readAsText(file);
 }
 
+//Load Assembly file
+function loadAssemblyFile() {
+    const fileInput = document.getElementById('asm-file-upload');
+    const file = fileInput.files[0];
+
+    if (!file) {
+        appendToOutput('Error: No assembly file selected');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const content = e.target.result;
+        // Set the content into the textarea
+        document.getElementById('assembly-input').value = content;
+        appendToOutput(`Assembly source loaded from: ${file.name}`);
+    };
+    reader.readAsText(file);
+}
+
 function highlightCurrentInstruction(currentPC) {
     const displayArea = document.getElementById('loaded-program-display');
     if (!displayArea) return;
@@ -230,6 +252,9 @@ function parseProgramContent(content) {
     try {
         const lines = content.split('\n');
         const programData = [];
+        
+        // 1. Clear previous saved program
+        originalProgramData = [];
 
         for (let line of lines) {
             line = line.trim();
@@ -242,6 +267,9 @@ function parseProgramContent(content) {
 
                 if (!isNaN(address) && !isNaN(instruction)) {
                     programData.push({ address, instruction });
+                    
+                    // 2. Save instruction for Reset
+                    originalProgramData.push({ address: address, value: instruction });
                 }
             }
         }
@@ -255,6 +283,12 @@ function parseProgramContent(content) {
         appendToOutput(`Program loaded successfully: ${programData.length} instructions`);
         updateUI();
         viewMemory();
+        
+        // 3. Highlight the first line immediately
+        if(programData.length > 0) {
+             highlightCurrentInstruction(programData[0].address);
+        }
+
     } catch (error) {
         appendToOutput('Error parsing program: ' + error.message);
     }
@@ -276,6 +310,9 @@ function parseDataContent(content) {
 
                 if (!isNaN(address) && !isNaN(data)) {
                     dataArray.push({ address, data });
+
+                    // 1. Save data value for Reset
+                    originalProgramData.push({ address: address, value: data });
                 }
             }
         }
@@ -419,13 +456,45 @@ function executeRun() {
 }
 
 function executeReset() {
+    // 1. Reset Hardware Registers
     computer.reset();
+
+    // 2. Restore Memory from the saved backup
+    if (originalProgramData && originalProgramData.length > 0) {
+        originalProgramData.forEach(item => {
+            computer.memory[item.address] = item.value;
+        });
+        appendToOutput('System Reset: Program & Data reloaded.');
+    } else {
+        appendToOutput('System Reset: Registers cleared.');
+    }
+
+    // 3. Clear the "Stale" UI Status
+    if (computer) {
+        computer.currentInstruction = 0; 
+        computer.instructionName = "Ready"; 
+        computer.currentMicroOp = "T0: AR <- PC";
+        computer.state = 'FETCH'; 
+    }
+
+    // 4. Update the UI
     updateUI();
-    resetVisualization();
-    clearOutput();
-    appendToOutput('Computer reset to initial state');
+    resetVisualization(); // Resets the Datapath animation
+    
+    // 5. Force Highlight to First Instruction (Address 0)
+    highlightCurrentInstruction(0);
+
+    // 6. Scroll the program list to the top
+    const displayArea = document.getElementById('loaded-program-display');
+    if (displayArea) {
+        displayArea.scrollTop = 0;
+    }
+
+    // 7. Refresh Memory View
     document.getElementById('memory-tbody').innerHTML = '';
+    viewMemory();
 }
+
 // Command Execution
 function executeCommand() {
     const input = document.getElementById('command-input').value.trim();
@@ -727,4 +796,42 @@ function clearAssembler() {
     document.getElementById('assembly-input').value = '';
     document.getElementById('assembler-output').textContent = '';
     appendToOutput('Assembler cleared');
+}
+
+//Toggle
+function switchView(viewName) {
+    const simView = document.getElementById('simulator-view');
+    const asmView = document.getElementById('assembler-view');
+    const btnSim = document.getElementById('btn-view-sim');
+    const btnAsm = document.getElementById('btn-view-asm');
+
+    if (viewName === 'simulator') {
+        // Show Simulator, Hide Assembler
+        if(simView) simView.classList.remove('hidden');
+        if(asmView) asmView.classList.add('hidden');
+        
+        // Update Buttons
+        if(btnSim) btnSim.classList.add('active');
+        if(btnAsm) btnAsm.classList.remove('active');
+    } else {
+        // Show Assembler, Hide Simulator
+        if(simView) simView.classList.add('hidden');
+        if(asmView) asmView.classList.remove('hidden');
+        
+        // Update Buttons
+        if(btnSim) btnSim.classList.remove('active');
+        if(btnAsm) btnAsm.classList.add('active');
+    }
+}
+
+// ui.js - Add this to the end
+
+function launchSimulator() {
+    const overlay = document.getElementById('intro-overlay');
+    
+    // Add the fade-out class to trigger CSS transition
+    overlay.classList.add('fade-out');
+    
+    // Optional: Play a sound or initialize something here if needed
+    console.log("Simulator Launched");
 }
