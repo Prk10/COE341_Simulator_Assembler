@@ -86,6 +86,7 @@ class BasicComputer {
     // Load program into memory; Review Masking Logic-might change based on input we have
     loadProgram(programData) {
         // programData is array of {address, instruction}
+        this.PC = programData[0].address & 0xFFF;
         for (let entry of programData) {
             let addr = entry.address & 0xFFF;  // 12-bit address
             let inst = entry.instruction & 0xFFFF;  // 16-bit instruction
