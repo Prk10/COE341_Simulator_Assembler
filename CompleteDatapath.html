@@ -192,7 +192,6 @@
 
 <div id="datapath-container" class="flex flex-col md:flex-row justify-center items-start space-x-0 md:space-x-4 max-w-5xl mx-auto">
     
-    <!-- LEFT PANEL: Register Details & Controls -->
     <div class="w-full md:w-48 mb-4 md:mb-0 p-2 bg-white rounded-lg shadow-md border border-gray-100 flex-shrink-0">
         <h2 class="text-sm font-bold text-gray-800 mb-2">Register/Bus Controls</h2>
         <div class="text-[0.6rem] text-gray-500 mb-3 italic">
@@ -201,39 +200,27 @@
             * Click Bus to activate
         </div>
         
-        <!-- MUX Selection -->
         <div class="mb-2">
             <h3 class="font-semibold text-gray-600 mb-1 text-[0.65rem]">Bus Source (S2, S1, S0)</h3>
             <div id="mux-controls" class="flex flex-wrap gap-1">
-                <!-- MUX selection inputs will be populated here -->
-            </div>
+                </div>
             <p class="mt-1 text-[0.6rem] text-gray-500">Selected: <span id="bus-source" class="font-bold text-gray-700"></span></p>
         </div>
     </div>
 
-    <!-- CENTER PANEL: Datapath Visualization -->
     <div id="datapath-wrapper" class="relative w-full overflow-visible">
-        <!-- SVG OVERLAY for drawing connections -->
         <svg id="bus-overlay-svg" class="absolute top-0 left-0 w-full h-full pointer-events-none z-30 overflow-visible">
-            <!-- Markers injected by JS -->
-        </svg>
+            </svg>
 
-        <!-- Datapath Elements -->
-        <!-- Spacing maintained at 180px for compact layout -->
         <div id="datapath-elements" class="flex items-start justify-between space-x-[180px] relative z-20"
              style="padding-top: var(--register-column-padding-top);">
 
-            <!-- Left Vertical Bus Bar -->
             <div id="left-bus" class="bus-line-vertical relative flex-shrink-0" onclick="toggleMainBus()"></div>
 
-            <!-- Registers Column -->
             <div id="registers-column" class="flex flex-col flex-shrink-0" style="gap: 0;">
-                <!-- Registers will be populated here -->
-            </div>
+                </div>
 
-            <!-- Right Vertical Bus Bar (Common Bus) -->
             <div id="right-bus" class="bus-line-vertical relative flex-shrink-0" onclick="toggleMainBus()">
-                <!-- MUX Box -->
                 <div id="bus-mux" onclick="toggleMainBus()" class="absolute mux-box rounded-md flex items-center justify-center text-white font-bold top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     BUS
                 </div>
@@ -281,14 +268,8 @@
         document.querySelectorAll('.highlight-active').forEach(el => el.classList.remove('highlight-active'));
         document.querySelectorAll('.bus-active').forEach(el => el.classList.remove('bus-active'));
         document.querySelectorAll('.control-active').forEach(el => {
-            // 1. Grab the label BEFORE modifying the class
-            // Better yet: Use the data attribute if available to be more robust
             const labelName = el.getAttribute('data-control') || el.innerText.split(':')[0].trim();
-
-            // 2. Reset the text
             el.innerHTML = `${labelName}: <span class="font-normal text-white opacity-90">0</span>`;
-
-            // 3. Remove the class LAST
             el.classList.remove('control-active');
         });
         
@@ -304,94 +285,199 @@
     }
 
     // Main function to animate a transfer
-    // Example: visualizeTransfer('AC', 'DR')
-    window.visualizeTransfer = function(sourceName, destName, RegisterToIncrement) {
+    window.visualizeTransfer = function(sourceName, destName, RegisterToIncrement, RegisterToCLR, highlightALU, highlightE, ALUTransfer) {
         resetVisualization(); // Clear previous state
 
         const sourceData = REGISTER_DATA.find(r => r.shortName === sourceName);
         const destData = REGISTER_DATA.find(r => r.shortName === destName);
 
         if (!sourceData || !destData) {
-            console.error("Invalid register names for transfer");
-            return;
-        }
-
-        // 1. Highlight Registers
-        const sourceEl = document.querySelector(`[data-reg-id="${sourceName}"] .register-box`);
-        const destEl = document.querySelector(`[data-reg-id="${destName}"] .register-box`);
-        if(sourceEl) sourceEl.classList.add('highlight-active');
-        if(destEl) destEl.classList.add('highlight-active');
-
-        // 2. Highlight Source Output Arrow (To Right Bus)
-        const outputArrow = document.querySelector(`[data-arrow-type="out"][data-reg="${sourceName}"]`);
-        if (outputArrow) {
-            outputArrow.classList.add('bus-active');
-            outputArrow.setAttribute('marker-end', 'url(#arrowhead-right-active)');
-        }
-
-        // 3. Highlight Main Bus (U-Shape)
-        const leftBus = document.getElementById('left-bus');
-        const rightBus = document.getElementById('right-bus');
-        const busMux = document.getElementById('bus-mux');
-        const mainBusPath = document.getElementById('main-bus-path');
-        if(leftBus) leftBus.classList.add('bus-active');
-        if(rightBus) rightBus.classList.add('bus-active');
-        if(busMux) busMux.classList.add('bus-active');
-        if(mainBusPath) mainBusPath.classList.add('bus-active');
-
-        // 4. Highlight Destination Input Arrow (From Left Bus)
-        const inputArrow = document.querySelector(`[data-arrow-type="in"][data-reg="${destName}"]`);
-        if (inputArrow) {
-            inputArrow.classList.add('bus-active');
-            inputArrow.setAttribute('marker-end', 'url(#arrowhead-right-active)');
-        }
-
-        // 5. Set Control Signal (LD=1 or Write=1)
-        const controlKey = (destName === 'M') ? 'Write' : 'LD';
-        const controlSpan = document.querySelector(`[data-reg-id="${destName}"] [data-control="${controlKey}"]`);
-        if (controlSpan) {
-            controlSpan.innerHTML = `${controlKey}: <span class="font-normal text-white opacity-90">1</span>`;
-            controlSpan.classList.add('control-active');
-        }
-
-        const controlLabel = 'INR';
-        const controlLabelSpan = document.querySelector(`[data-reg-id="${RegisterToIncrement}"] [data-control="${controlLabel}"]`);
-        if (controlLabelSpan) {
-            // Check if it is currently active
-            if (controlLabelSpan.classList.contains('control-active')) {
-                // STATE: ACTIVE -> INACTIVE
-                // Remove the class and clear the text (or set to 0)
-                controlLabelSpan.classList.remove('control-active');
-                controlLabelSpan.innerHTML = `${controlLabel}: <span class="font-normal text-white opacity-90">0</span>`;
+            // Handle case where we might just want to highlight ALU ops without bus transfer
+            if(highlightALU || highlightE || sourceName === "AC") {
+                 // Just proceed
             } else {
-                // STATE: INACTIVE -> ACTIVE
-                // Add the class and set to 1
+                console.error("Invalid register names for transfer");
+                return;
+            }
+        }
+
+        if(sourceData && destData) {
+            // 1. Highlight Registers (Common for both cases)
+            const sourceEl = document.querySelector(`[data-reg-id="${sourceName}"] .register-box`);
+            const destEl = document.querySelector(`[data-reg-id="${destName}"] .register-box`);
+            if(sourceEl) sourceEl.classList.add('highlight-active');
+            if(destEl) destEl.classList.add('highlight-active');
+
+            // CHECK FOR SPECIAL CASE: DR -> AC (Direct Transfer via ALU, NO BUS)
+            const isDrToAc = (sourceName === 'DR' && destName === 'AC');
+
+            if (isDrToAc) {
+                // ALWAYS Highlight DR -> ALU Link for this transfer
+                const drAluLink = document.getElementById('dr-alu-link');
+                if(drAluLink) {
+                    drAluLink.classList.add('bus-active');
+                    drAluLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
+                }
+
+                // ALWAYS Highlight ALU -> AC Link (RESULT) for this transfer
+                const aluAcLink = document.getElementById('alu-ac-link');
+                if(aluAcLink) {
+                    aluAcLink.classList.add('bus-active');
+                    aluAcLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
+                }
+
+                // HIGHLIGHT ALU BOX (Path goes through it)
+                const alu = document.querySelector('#alu-block');
+                if(alu) alu.classList.add('highlight-active');
+
+                console.log(ALUTransfer);
+                // CONDITIONAL: Highlight Feedback (AC -> ALU) ONLY if ALUTransfer is FALSE (Arithmetic Operation)
+                if (!ALUTransfer) {
+                    const acAluLink = document.getElementById('ac-alu-link');
+                    if(acAluLink) {
+                        acAluLink.classList.add('bus-active');
+                        acAluLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
+                    }
+                }
+
+            } else {
+                // --- STANDARD BUS TRANSFER LOGIC ---
+                
+                // 2. Highlight Source Output Arrow (To Right Bus)
+                const outputArrow = document.querySelector(`[data-arrow-type="out"][data-reg="${sourceName}"]`);
+                if (outputArrow) {
+                    outputArrow.classList.add('bus-active');
+                    outputArrow.setAttribute('marker-end', 'url(#arrowhead-right-active)');
+                }
+
+                // 3. Highlight Main Bus (U-Shape)
+                const leftBus = document.getElementById('left-bus');
+                const rightBus = document.getElementById('right-bus');
+                const busMux = document.getElementById('bus-mux');
+                const mainBusPath = document.getElementById('main-bus-path');
+                if(leftBus) leftBus.classList.add('bus-active');
+                if(rightBus) rightBus.classList.add('bus-active');
+                if(busMux) busMux.classList.add('bus-active');
+                if(mainBusPath) mainBusPath.classList.add('bus-active');
+
+                // 4. Highlight Destination Input Arrow (From Left Bus)
+                const inputArrow = document.querySelector(`[data-arrow-type="in"][data-reg="${destName}"]`);
+                if (inputArrow) {
+                    inputArrow.classList.add('bus-active');
+                    inputArrow.setAttribute('marker-end', 'url(#arrowhead-right-active)');
+                }
+            }
+
+            // 5. Set Control Signal (LD=1 or Write=1)
+            const controlKey = (destName === 'M') ? 'Write' : 'LD';
+            const controlSpan = document.querySelector(`[data-reg-id="${destName}"] [data-control="${controlKey}"]`);
+            if (controlSpan) {
+                controlSpan.innerHTML = `${controlKey}: <span class="font-normal text-white opacity-90">1</span>`;
+                controlSpan.classList.add('control-active');
+            }
+
+            // 6. Update Bus Selection Display (Only if Bus is used)
+            if (!isDrToAc) {
+                const busId = sourceData.busId;
+                const busSourceEl = document.getElementById('bus-source');
+                if (busId !== undefined && busSourceEl) {
+                    const binId = busId.toString(2).padStart(3, '0');
+                    busSourceEl.textContent = `0b${binId} (${sourceName})`;
+                    
+                    const muxInputs = document.getElementById('mux-controls');
+                    if (muxInputs) {
+                        muxInputs.innerHTML = '';
+                        const bits = binId.split(''); 
+                        ['S2', 'S1', 'S0'].forEach((lbl, idx) => {
+                            const val = bits[idx];
+                            const div = document.createElement('div');
+                            div.className = 'bg-gray-100 px-2 py-1 rounded-md shadow-inner text-xs font-mono';
+                            if (val === '1') div.classList.add('bg-yellow-100', 'text-yellow-800', 'border', 'border-yellow-300');
+                            div.innerHTML = `<span class="font-bold">${lbl}</span>: ${val}`;
+                            muxInputs.appendChild(div);
+                        });
+                    }
+                }
+            } else {
+                // Clear Bus Info if Direct Transfer
+                const busSourceEl = document.getElementById('bus-source');
+                if(busSourceEl) busSourceEl.textContent = "Direct (No Bus)";
+                const muxInputs = document.getElementById('mux-controls');
+                if(muxInputs) muxInputs.innerHTML = '<span class="text-xs text-gray-400">Inactive</span>';
+            }
+
+            // NEW: Highlight AR -> Memory Connection if Memory is accessed
+            if (sourceName === 'M' || destName === 'M') {
+                const arMemLink = document.getElementById('ar-memory-link');
+                if (arMemLink) {
+                     arMemLink.classList.add('bus-active');
+                     arMemLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
+                }
+            }
+        }
+
+        // set INR if Increment is used
+        const controlLabel = 'INR';
+        if(RegisterToIncrement) {
+            const controlLabelSpan = document.querySelector(`[data-reg-id="${RegisterToIncrement}"] [data-control="${controlLabel}"]`);
+            if (controlLabelSpan) {
                 controlLabelSpan.classList.add('control-active');
                 controlLabelSpan.innerHTML = `${controlLabel}: <span class="font-normal text-white opacity-90">1</span>`;
             }
         }
 
-        // 6. Update Bus Selection Display
-        const busId = sourceData.busId;
-        const busSourceEl = document.getElementById('bus-source');
-        if (busId !== undefined && busSourceEl) {
-            const binId = busId.toString(2).padStart(3, '0');
-            busSourceEl.textContent = `0b${binId} (${sourceName})`;
-            
-            // Also update the MUX input UI
-            const muxInputs = document.getElementById('mux-controls');
-            if (muxInputs) {
-                 muxInputs.innerHTML = '';
-                 const bits = binId.split(''); // ['1', '0', '0']
-                 ['S2', 'S1', 'S0'].forEach((lbl, idx) => {
-                     const val = bits[idx];
-                     const div = document.createElement('div');
-                     div.className = 'bg-gray-100 px-2 py-1 rounded-md shadow-inner text-xs font-mono';
-                     if (val === '1') div.classList.add('bg-yellow-100', 'text-yellow-800', 'border', 'border-yellow-300');
-                     div.innerHTML = `<span class="font-bold">${lbl}</span>: ${val}`;
-                     muxInputs.appendChild(div);
-                 });
+        // set CLR if clear is Used
+        const controlCLRLabel = 'CLR';
+        if(RegisterToCLR) {
+            const controlCLRLabelSpan = document.querySelector(`[data-reg-id="${RegisterToCLR}"] [data-control="${controlCLRLabel}"]`);
+            if (controlCLRLabelSpan) {
+                controlCLRLabelSpan.classList.add('control-active');
+                controlCLRLabelSpan.innerHTML = `${controlCLRLabel}: <span class="font-normal text-white opacity-90">1</span>`;
             }
+        }
+
+        // higlight ALU and E if they are used
+        const alu = document.querySelector('#alu-block')
+        const e = document.querySelector('#e-block')
+        if (alu) {
+            // Standard ALU Highlighting for non-DR-to-AC cases (or additional cases)
+            if (highlightALU) {
+                alu.classList.add('highlight-active');
+                
+                // Whenever ALU is highlighted, highlight connection to AC (Result)
+                // This covers generic cases like CMA, etc.
+                const aluAcLink = document.getElementById('alu-ac-link');
+                if(aluAcLink) {
+                    aluAcLink.classList.add('bus-active');
+                    aluAcLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
+                }
+                
+                // Highlight Feedback for specific non-DR cases (like CMA)
+                if(sourceName === 'AC') {
+                     const acAluLink = document.getElementById('ac-alu-link');
+                     if(acAluLink) {
+                        acAluLink.classList.add('bus-active');
+                        acAluLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
+                    }
+                }
+                
+                // Highlight INPR link if INPR is source
+                if(sourceName === 'INPR') {
+                    const inprAluLink = document.getElementById('inpr-alu-link');
+                    if(inprAluLink) {
+                        inprAluLink.classList.add('bus-active');
+                        inprAluLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
+                    }
+                }
+            }
+            // Note: We don't remove class here if isDrToAc added it.
+            else if (sourceName !== 'DR' || destName !== 'AC') {
+                alu.classList.remove('highlight-active');
+            }
+        }
+        if (e) {
+            if (highlightE) e.classList.add('highlight-active');
+            else e.classList.remove('highlight-active');
         }
     }
 
@@ -407,12 +493,6 @@
                 const valEl = document.querySelector(`[data-reg-id="${regName}"] .reg-val`);
                 if (valEl) {
                     valEl.textContent = `Val: ${newVal}`;
-                }
-                
-                // Update Side Panel if this register is selected (optional, simplistic check)
-                const detailsTitle = document.querySelector('#register-details p span');
-                if (detailsTitle && detailsTitle.innerText.includes(regName)) {
-                    renderRegisterDetails(reg);
                 }
             }
         }
@@ -531,7 +611,6 @@
 
         const wrapperRect = datapathWrapper.getBoundingClientRect();
         const acRect = acRegister.getBoundingClientRect();
-        const drRect = drRegister.getBoundingClientRect();
 
         const aluWidth = 70; 
         const aluHeight = 50;
@@ -653,6 +732,7 @@
             };
             
             svg.appendChild(path);
+            return path; // Return path for later targeting
         };
 
         const drawLine = (x1, y1, x2, y2, markerBase, regName, type) => {
@@ -710,24 +790,56 @@
             }
         });
 
-        // 3. ALU Connections
+        // 3. DIRECT CONNECTION: AR -> MEMORY (ADDRESS)
+        const memEl = document.querySelector('[data-reg-id="M"]');
+        const arEl = document.querySelector('[data-reg-id="AR"]');
+        if(memEl && arEl) {
+            const memRect = getRelativeRect(memEl);
+            const arRect = getRelativeRect(arEl);
+            
+            // Define a vertical path line to the right of the registers, but left of the Bus lines
+            const addressPathX = rightBusRect.left - 40; // Adjust spacing
+
+            // Draw Line from AR Right -> Up -> Memory Right (Address)
+            const arMemPath = drawPath(`M ${arRect.right},${arRect.centerY} 
+                      L ${addressPathX},${arRect.centerY} 
+                      L ${addressPathX},${memRect.centerY + 10} 
+                      L ${memRect.right},${memRect.centerY + 10}`, 'arrowhead-right');
+            
+            arMemPath.id = "ar-memory-link";
+
+            // Add Label "Addr"
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", addressPathX - 22); 
+            text.setAttribute("y", (arRect.centerY + memRect.centerY)/2); 
+            text.setAttribute("font-size", "9");
+            text.setAttribute("fill", "#444");
+            text.textContent = "Addr";
+            svg.appendChild(text);
+        }
+
+        // 4. ALU Connections (Modified for Direct Connections)
         if (aluEl) {
             const aluRect = getRelativeRect(aluEl);
             const acRect = getRelativeRect(document.querySelector('[data-reg-id="AC"]'));
             const drRect = getRelativeRect(document.querySelector('[data-reg-id="DR"]'));
             const inprRect = getRelativeRect(document.querySelector('[data-reg-id="INPR"]'));
             
-            // A. ALU -> AC (Output)
+            // A. ALU -> AC (Output / Result)
             const aluToAcY = acRect.centerY + 4; 
-            drawPath(`M ${aluRect.right},${aluToAcY} L ${acRect.left - 4},${aluToAcY}`, 'arrowhead-right');
+            const aluAcPath = drawPath(`M ${aluRect.right},${aluToAcY} L ${acRect.left - 4},${aluToAcY}`, 'arrowhead-right');
+            aluAcPath.id = "alu-ac-link"; // Add ID for targeting
 
-            // B. DR -> ALU (Input 1)
-            const drOutX = drRect.left;
-            const drOutY = drRect.centerY;
-            const aluInX1 = aluRect.left + 15; 
+            // B. DIRECT CONNECTION: DR -> ALU (Input 1)
+            // Starting from Bottom Left of DR to ensure separation from Bus lines
+            const drOutX = drRect.left + 15;
+            const drOutY = drRect.bottom;
+            const aluInX1 = aluRect.left + 20; 
             const aluInY1 = aluRect.top;
             
-            drawPath(`M ${drOutX},${drOutY} L ${aluInX1},${drOutY} L ${aluInX1},${aluInY1 - 3}`, 'arrowhead-right');
+            // Draw from DR Bottom -> Down -> ALU Top
+            const drAluPath = drawPath(`M ${drOutX},${drOutY} L ${drOutX},${drOutY + 10} L ${aluInX1},${drOutY + 10} L ${aluInX1},${aluInY1 - 3}`, 'arrowhead-right');
+            drAluPath.id = "dr-alu-link"; // Add ID for targeting
 
             // C. INPR -> ALU 
             const inprOutX = inprRect.left;
@@ -735,19 +847,23 @@
             const aluIn2X = aluRect.left + 15; 
             const aluIn2Y = aluRect.bottom;
 
-            drawPath(`M ${inprOutX},${inprOutY} L ${aluIn2X},${inprOutY} L ${aluIn2X},${aluIn2Y + 3}`, 'arrowhead-right');
+            const inprAluPath = drawPath(`M ${inprOutX},${inprOutY} L ${aluIn2X},${inprOutY} L ${aluIn2X},${aluIn2Y + 3}`, 'arrowhead-right');
+            inprAluPath.id = "inpr-alu-link"; // Add ID
 
-            // D. AC -> ALU (Feedback)
-            const acOutX = acRect.centerX;
+            // D. DIRECT CONNECTION: AC -> ALU (Feedback Input)
+            // Loop from AC Bottom -> Left -> Up -> ALU Bottom/Side
+            const acOutX = acRect.left + 15; // Slightly offset from left edge
             const acOutY = acRect.bottom;
             const aluInputMidY = aluRect.centerY + (aluRect.height / 4);
             const aluEntryX = aluRect.left - 3; 
 
-            drawPath(`M ${acOutX},${acOutY} 
-                      L ${acOutX},${aluInputMidY + 10} 
-                      L ${aluEntryX - 20},${aluInputMidY + 10} 
-                      L ${aluEntryX - 20},${aluInputMidY}
+            // Draw Feedback Loop
+            const acAluPath = drawPath(`M ${acOutX},${acOutY} 
+                      L ${acOutX},${acOutY + 10} 
+                      L ${aluEntryX - 15},${acOutY + 10} 
+                      L ${aluEntryX - 15},${aluInputMidY}
                       L ${aluEntryX},${aluInputMidY}`, 'arrowhead-right');
+            acAluPath.id = "ac-alu-link"; // Add ID
 
             // E. E Flip-Flop Connections
             if(eEl) {
@@ -807,7 +923,7 @@
         
         // 2. Handle Animation/Highlighting
         else if (msg.type === 'HIGHLIGHT_TRANSFER') {
-            window.visualizeTransfer(msg.source, msg.dest, msg.increment);
+            window.visualizeTransfer(msg.source, msg.dest, msg.increment, msg.clr, msg.ALUUsed, msg.EUsed, msg.ALUTransfer);
         }
         
         // 3. Handle Reset

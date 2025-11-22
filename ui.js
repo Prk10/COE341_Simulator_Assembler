@@ -91,14 +91,18 @@ function updateProfiler() {
     document.getElementById('prof-bandwidth').textContent = stats.bandwidth;
 }
 
-function highlightTransfer(sourceName, destName, RegisterToIncrement) {
+function highlightTransfer(sourceName, destName, RegisterToIncrement, RegisterToCLR, ALU, E, ALUTransfer) {
     const iframe = document.querySelector('iframe');
     if (iframe && iframe.contentWindow) {
         iframe.contentWindow.postMessage({ 
             type: 'HIGHLIGHT_TRANSFER', 
             source: sourceName,
             dest: destName,
-            increment: RegisterToIncrement
+            increment: RegisterToIncrement,
+            clr: RegisterToCLR,
+            ALUUsed: ALU,
+            EUsed: E,
+            ALUTransfer: ALUTransfer
         }, '*');
     }
 }
@@ -295,8 +299,18 @@ function executeNextCycle() {
     const result = computer.executeCycle();
     const componentsToHighlight = computer.componentsInInstruction;
     const componentsToIncrement = computer.componentsToIncrement;
+    const componentsToClear = computer.componentsToClear;
+    const ALUUsed = computer.ALUUsed;
+    const EUsed = computer.EUsed;
+    const ALUTransfer = computer.ALUtransfer;
     updateUI();
-    highlightTransfer(...componentsToHighlight, ...componentsToIncrement);
+    highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
+
+    // Get the PC value (address of the NEXT instruction)
+    const currentPC = computer.PC; 
+    
+    // Highlight the current instruction running
+    highlightCurrentInstruction(currentPC - 1); 
 
     if (!result) {
         appendToOutput('Computer halted');
@@ -316,9 +330,20 @@ function executeFastCycle() {
 
     const componentsToHighlight = computer.componentsInInstruction;
     const componentsToIncrement = computer.componentsToIncrement;
+    const componentsToClear = computer.componentsToClear;
+    const ALUUsed = computer.ALUUsed;
+    const EUsed = computer.EUsed;
+    const ALUTransfer = computer.ALUtransfer;
 
     updateUI();
-    highlightTransfer(...componentsToHighlight, ...componentsToIncrement);
+    highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
+
+    // Get the PC value (address of the NEXT instruction)
+    const currentPC = computer.PC; 
+    
+    // Highlight the current instruction running
+    highlightCurrentInstruction(currentPC - 1); 
+
     appendToOutput(`Executed ${n} cycles`);
 }
 
@@ -326,8 +351,12 @@ function executeNextInstruction() {
     const result = computer.executeInstruction();
     const componentsToHighlight = computer.componentsInInstruction;
     const componentsToIncrement = computer.componentsToIncrement;
+    const componentsToClear = computer.componentsToClear;
+    const ALUUsed = computer.ALUUsed;
+    const EUsed = computer.EUsed;
+    const ALUTransfer = computer.ALUtransfer;
     updateUI();
-    highlightTransfer(...componentsToHighlight, ...componentsToIncrement);
+    highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
 
     // Get the PC value (address of the NEXT instruction)
     const currentPC = computer.PC; 
@@ -353,10 +382,14 @@ function executeFastInstruction() {
 
     const componentsToHighlight = computer.componentsInInstruction;
     const componentsToIncrement = computer.componentsToIncrement;
-    const currentPC = computer.PC; 
+    const componentsToClear = computer.componentsToClear;
+    const ALUUsed = computer.ALUUsed;
+    const EUsed = computer.EUsed;
+    const currentPC = computer.PC;
+    const ALUTransfer = computer.ALUtransfer; 
 
     updateUI();
-    highlightTransfer(...componentsToHighlight, ...componentsToIncrement);
+    highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
     highlightCurrentInstruction(currentPC - 1); 
     appendToOutput(`Executed ${n} instructions`);
 }
@@ -367,10 +400,14 @@ function executeRun() {
     const endTime = Date.now();
     const componentsToHighlight = computer.componentsInInstruction;
     const componentsToIncrement = computer.componentsToIncrement;
-    const currentPC = computer.PC; 
+    const componentsToClear = computer.componentsToClear;
+    const ALUUsed = computer.ALUUsed;
+    const EUsed = computer.EUsed;
+    const currentPC = computer.PC;
+    const ALUTransfer = computer.ALUtransfer; 
 
     updateUI();
-    highlightTransfer(...componentsToHighlight, componentsToIncrement[0]);
+    highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
     highlightCurrentInstruction(currentPC - 1); 
 
     if (result) {

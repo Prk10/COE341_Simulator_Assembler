@@ -32,6 +32,10 @@ class BasicComputer {
         this.changedComponents = [];
         this.componentsInInstruction = [];
         this.componentsToIncrement = [];
+        this.componentsToClear = [];
+        this.ALUUsed = false;
+        this.EUsed = false;
+        this.ALUtransfer = false;
         this.instructionName = '';
 
         // Profiler
@@ -66,6 +70,12 @@ class BasicComputer {
         this.state = 'IDLE';
         this.currentMicroOp = '';
         this.changedComponents = [];
+        this.componentsInInstruction = [];
+        this.componentsToIncrement = [];
+        this.componentsToClear = [];
+        this.ALUUsed = false;
+        this.EUsed = false;
+        this.ALUtransfer = false;
         this.totalCycles = 0;
         this.instructionsExecuted = 0;
         this.memoryReads = 0;
@@ -197,6 +207,13 @@ class BasicComputer {
         this
         this.changedComponents = ['AR'];
         this.componentsInInstruction = ['PC', 'AR'];
+
+        this.componentsToClear = [];
+        this.componentsToIncrement = [];
+        this.ALUUsed = false;
+        this.EUsed = false;
+        this.ALUtransfer = false;
+
         this.currentMicroOp = 'T0: AR ← PC';
         this.SC = 1;
         this.instructionStartCycle = this.totalCycles;
@@ -211,6 +228,12 @@ class BasicComputer {
         this.changedComponents = ['IR', 'PC'];
         this.componentsInInstruction = ['M', 'IR'];
         this.componentsToIncrement = ['PC'];
+
+        this.componentsToClear = [];
+        this.ALUUsed = false;
+        this.EUsed = false;
+        this.ALUtransfer = false;
+
         this.currentMicroOp = 'T1: IR ← M[AR], PC ← PC + 1';
         this.SC = 2;
         this.currentInstruction = this.IR;
@@ -226,6 +249,13 @@ class BasicComputer {
         this.I = this.getIndirectBit(this.IR);
         this.changedComponents = ['AR', 'I'];
         this.componentsInInstruction = ['IR', 'AR'];
+
+        this.componentsToClear = [];
+        this.componentsToIncrement = [];
+        this.ALUUsed = false;
+        this.EUsed = false;
+        this.ALUtransfer = false;
+
         this.currentMicroOp = 'T2: Decode IR, AR ← IR(0-11), I ← IR(15)';
         this.SC = 3;
         return true;
@@ -258,6 +288,13 @@ class BasicComputer {
                 this.AR = this.memRead(this.AR);
                 this.changedComponents = ['AR'];
                 this.componentsInInstruction = ['M', 'AR'];
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T3: AR ← M[AR] (Indirect)';
                 this.SC = 4;
                 return true;
@@ -281,6 +318,13 @@ class BasicComputer {
                 this.DR = this.memRead(this.AR);
                 this.changedComponents = ['DR'];
                 this.componentsInInstruction = ['M', 'DR'];
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T4: DR ← M[AR]';
                 this.SC = 5;
                 return true;
@@ -289,6 +333,13 @@ class BasicComputer {
                 this.DR = this.memRead(this.AR);
                 this.changedComponents = ['DR'];
                 this.componentsInInstruction = ['M', 'DR'];
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T4: DR ← M[AR]';
                 this.SC = 5;
                 return true;
@@ -297,6 +348,13 @@ class BasicComputer {
                 this.DR = this.memRead(this.AR);
                 this.changedComponents = ['DR'];
                 this.componentsInInstruction = ['M', 'DR'];
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUUsed = false;
+                this.ALUtransfer = false;
+                this.EUsed = false;
+
                 this.currentMicroOp = 'T4: DR ← M[AR]';
                 this.SC = 5;
                 return true;
@@ -305,6 +363,13 @@ class BasicComputer {
                 this.memWrite(this.AR, this.AC);
                 this.changedComponents = ['Memory'];
                 this.componentsInInstruction = ['AC', 'M'];
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUUsed = false;
+                this.ALUtransfer = false;
+                this.EUsed = false;
+
                 this.currentMicroOp = 'T4: M[AR] ← AC';
                 this.SC = 0;
                 this.instructionsExecuted++;
@@ -314,6 +379,13 @@ class BasicComputer {
                 this.PC = this.AR & 0xFFF;
                 this.changedComponents = ['PC'];
                 this.componentsInInstruction = ['AR', 'PC'];
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUUsed = false;
+                this.ALUtransfer = false;
+                this.EUsed = false;
+
                 this.currentMicroOp = 'T4: PC ← AR';
                 this.SC = 0;
                 this.instructionsExecuted++;
@@ -325,6 +397,12 @@ class BasicComputer {
                 this.changedComponents = ['Memory', 'AR'];
                 this.componentsInInstruction = ['PC', 'M'];
                 this.componentsToIncrement = ['AR'];
+
+                this.componentsToClear = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T4: M[AR] ← PC, AR ← AR + 1';
                 this.SC = 5;
                 return true;
@@ -333,6 +411,13 @@ class BasicComputer {
                 this.DR = this.memRead(this.AR);
                 this.changedComponents = ['DR'];
                 this.componentsInInstruction = ['M', 'DR'];
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T4: DR ← M[AR]';
                 this.SC = 5;
                 return true;
@@ -354,6 +439,13 @@ class BasicComputer {
                 this.changedComponents = ['AC'];
                 this.componentsInInstruction = ['DR', 'AC'];
                 this.currentMicroOp = 'T5: AC ← AC ∧ DR';
+                this.ALUUsed = true;
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.SC = 0;
                 this.instructionsExecuted++;
                 return true;
@@ -364,6 +456,13 @@ class BasicComputer {
                 this.AC = sum & 0xFFFF;
                 this.changedComponents = ['AC', 'E'];
                 this.componentsInInstruction = ['DR', 'AC'];
+                this.ALUUsed = true;
+                this.EUsed = true;
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T5: AC ← AC + DR, E ← Cout';
                 this.SC = 0;
                 this.instructionsExecuted++;
@@ -373,6 +472,13 @@ class BasicComputer {
                 this.AC = this.DR & 0xFFFF;
                 this.changedComponents = ['AC'];
                 this.componentsInInstruction = ['DR', 'AC'];
+                this.ALUUsed = true;
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUtransfer = true;
+                this.EUsed = false;
+
                 this.currentMicroOp = 'T5: AC ← DR';
                 this.SC = 0;
                 this.instructionsExecuted++;
@@ -382,6 +488,13 @@ class BasicComputer {
                 this.PC = this.AR & 0xFFF;
                 this.changedComponents = ['PC'];
                 this.componentsInInstruction = ['AR', 'PC'];
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T5: PC ← AR';
                 this.SC = 0;
                 this.instructionsExecuted++;
@@ -390,7 +503,14 @@ class BasicComputer {
             case 6:  // ISZ
                 this.DR = (this.DR + 1) & 0xFFFF;
                 this.changedComponents = ['DR'];
+                this.componentsInInstruction = ['DR'];
                 this.componentsToIncrement = ['DR'];
+
+                this.componentsToClear = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T5: DR ← DR + 1';
                 this.SC = 6;
                 return true;
@@ -413,10 +533,23 @@ class BasicComputer {
                 this.changedComponents = ['Memory', 'PC'];
                 this.componentsInInstruction = ['DR', 'M'];
                 this.componentsToIncrement = ['PC'];
+
+                this.componentsToClear = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T6: M[AR] ← DR, PC ← PC + 1 (skip)';
             } else {
                 this.changedComponents = ['Memory'];
                 this.componentsInInstruction = ['DR', 'M'];
+
+                this.componentsToClear = [];
+                this.componentsToIncrement = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T6: M[AR] ← DR';
             }
             this.SC = 0;
@@ -438,6 +571,13 @@ class BasicComputer {
             this.AC = 0;
             this.changedComponents.push('AC');
             this.componentsInInstruction = ['AC'];
+
+            this.componentsToClear = ['AC'];
+            this.componentsToIncrement = [];
+            this.EUsed = false;
+            this.ALUtransfer = false;
+            this.ALUUsed = false;
+
             this.currentMicroOp = 'T3: AC ← 0 (CLA)';
             executed = true;
         }
@@ -446,6 +586,13 @@ class BasicComputer {
         if (ir_bits & 0x400) {
             this.E = 0;
             this.changedComponents.push('E');
+            this.EUsed = true;
+
+            this.componentsToClear = [];
+            this.componentsToIncrement = [];
+            this.ALUUsed = false;
+            this.ALUtransfer = false;
+
             this.currentMicroOp = 'T3: E ← 0 (CLE)';
             executed = true;
         }
@@ -455,6 +602,13 @@ class BasicComputer {
             this.AC = (~this.AC) & 0xFFFF;
             this.changedComponents.push('AC');
             this.componentsInInstruction = ['AC'];
+            this.ALUUsed = true;
+
+            this.componentsToClear = [];
+            this.componentsToIncrement = [];
+            this.EUsed = false;
+            this.ALUtransfer = false;
+
             this.currentMicroOp = `T3: AC ← AC ${(CMA)}`;
             executed = true;
         }
@@ -464,6 +618,13 @@ class BasicComputer {
             this.E = this.E ? 0 : 1;
             this.changedComponents.push('E');
             this.componentsInInstruction = ['AC'];
+            this.EUsed = true;
+
+            this.componentsToClear = [];
+            this.componentsToIncrement = [];
+            this.ALUUsed = false;
+            this.ALUtransfer = false;
+
             this.currentMicroOp = `T3: E ← E' ${(CME)}`;
             executed = true;
         }
@@ -475,6 +636,13 @@ class BasicComputer {
             this.E = temp_e;
             this.changedComponents.push('AC', 'E');
             this.componentsInInstruction = ['AC'];
+            this.ALUUsed = true;
+            this.EUsed = true;
+
+            this.componentsToClear = [];
+            this.componentsToIncrement = [];
+            this.ALUtransfer = false;
+
             this.currentMicroOp = 'T3: AC ← shr AC, AC(15) ← E, E ← AC(0) (CIR)';
             executed = true;
         }
@@ -486,6 +654,13 @@ class BasicComputer {
             this.E = temp_e;
             this.changedComponents.push('AC', 'E');
             this.componentsInInstruction = ['AC'];
+            this.ALUUsed = true;
+            this.EUsed = true;
+
+            this.componentsToClear = [];
+            this.componentsToIncrement = [];
+            this.ALUtransfer = false;
+
             this.currentMicroOp = 'T3: AC ← shl AC, AC(0) ← E, E ← AC(15) (CIL)';
             executed = true;
         }
@@ -495,6 +670,13 @@ class BasicComputer {
             this.AC = (this.AC + 1) & 0xFFFF;
             this.changedComponents.push('AC');
             this.componentsToIncrement = ['AC'];
+
+            this.componentsToClear = [];
+            this.componentsToIncrement = [];
+            this.ALUUsed = false;
+            this.EUsed = false;
+            this.ALUtransfer = false;
+
             this.currentMicroOp = 'T3: AC ← AC + 1 (INC)';
             executed = true;
         }
@@ -505,6 +687,12 @@ class BasicComputer {
                 this.PC = (this.PC + 1) & 0xFFF;
                 this.changedComponents.push('PC');
                 this.componentsToIncrement = ['PC'];
+
+                this.componentsToClear = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T3: PC ← PC + 1 (SPA, AC positive)';
             } else {
                 this.currentMicroOp = 'T3: SPA, AC negative, no skip';
@@ -518,6 +706,12 @@ class BasicComputer {
                 this.PC = (this.PC + 1) & 0xFFF;
                 this.changedComponents.push('PC');
                 this.componentsToIncrement = ['PC'];
+
+                this.componentsToClear = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T3: PC ← PC + 1 (SNA, AC negative)';
             } else {
                 this.currentMicroOp = 'T3: SNA, AC positive, no skip';
@@ -531,6 +725,12 @@ class BasicComputer {
                 this.PC = (this.PC + 1) & 0xFFF;
                 this.changedComponents.push('PC');
                 this.componentsToIncrement = ['PC'];
+
+                this.componentsToClear = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T3: PC ← PC + 1 (SZA, AC zero)';
             } else {
                 this.currentMicroOp = 'T3: SZA, AC not zero, no skip';
@@ -544,6 +744,12 @@ class BasicComputer {
                 this.PC = (this.PC + 1) & 0xFFF;
                 this.changedComponents.push('PC');
                 this.componentsToIncrement = ['PC'];
+
+                this.componentsToClear = [];
+                this.ALUUsed = false;
+                this.EUsed = false;
+                this.ALUtransfer = false;
+
                 this.currentMicroOp = 'T3: PC ← PC + 1 (SZE, E zero)';
             } else {
                 this.currentMicroOp = 'T3: SZE, E not zero, no skip';
@@ -555,6 +761,13 @@ class BasicComputer {
         if (ir_bits & 0x001) {
             this.S = 0;
             this.changedComponents.push('S');
+
+            this.componentsToClear = [];
+            this.componentsToIncrement = [];
+            this.ALUUsed = false;
+            this.EUsed = false;
+            this.ALUtransfer = false;
+
             this.currentMicroOp = 'T3: S ← 0 (HLT)';
             executed = true;
         }
