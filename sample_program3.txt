@@ -1,0 +1,18 @@
+// Sample Program 3: Multiplication (via repeated addition)
+// Multiplies two numbers
+000 2110
+001 7800
+002 0111
+003 1110
+004 3112
+005 2111
+006 7020
+007 3111
+008 6113
+009 4003
+00A 2112
+00B 7001
+110 0005
+111 0003
+112 0000
+113 FFFF

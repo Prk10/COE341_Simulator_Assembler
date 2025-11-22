@@ -1,0 +1,16 @@
+/ Sample Assembly Program 2: Loop with ISZ
+/ This program demonstrates a counting loop
+
+        ORG 0
+        LDA MONE        / Load -1
+LOOP,   STA COUNT       / Store loop counter
+        LDA VALUE       / Load value
+        INC             / Increment value
+        STA VALUE       / Store back
+        ISZ COUNT       / Increment counter, skip if zero
+        BUN LOOP        / Branch back to loop
+        HLT             / Halt
+MONE,   DEC -4          / Counter: -4 (loop 4 times)
+COUNT,  HEX 0           / Counter storage
+VALUE,  HEX 0           / Value to increment
+        END

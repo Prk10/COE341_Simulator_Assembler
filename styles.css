@@ -1,0 +1,575 @@
+/* styles.css - Mano's Basic Computer Simulator Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+header h1 {
+    color: #667eea;
+    margin-bottom: 5px;
+}
+
+header p {
+    color: #666;
+    font-size: 14px;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.left-panel, .right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.section {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.section h2 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 20px;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 8px;
+}
+
+.section h3 {
+    color: #764ba2;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.section h4 {
+    color: #666;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+/* Datapath Diagram */
+.datapath-diagram {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 10px;
+    overflow-x: auto;
+}
+
+.component {
+    fill: #e0e7ff;
+    stroke: #667eea;
+    stroke-width: 2;
+}
+
+.register {
+    fill: #ddd6fe;
+    stroke: #764ba2;
+    stroke-width: 2;
+    transition: fill 0.3s;
+}
+
+.register.changed {
+    fill: #fbbf24;
+    animation: glow 0.5s ease-in-out;
+}
+
+@keyframes glow {
+    0%, 100% { filter: drop-shadow(0 0 5px #fbbf24); }
+    50% { filter: drop-shadow(0 0 15px #f59e0b); }
+}
+
+.component-label, .register-label {
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 14px;
+    text-anchor: middle;
+    fill: #333;
+}
+
+.component-value, .register-value {
+    font-family: monospace;
+    font-size: 12px;
+    text-anchor: middle;
+    fill: #666;
+}
+
+.bus-line {
+    stroke: #667eea;
+    stroke-width: 2;
+    stroke-dasharray: 5,5;
+}
+
+.bus-label {
+    font-family: sans-serif;
+    font-size: 12px;
+    text-anchor: middle;
+    fill: #667eea;
+}
+
+/* Register Details */
+.register-details {
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.reg-row {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    margin: 4px 0;
+    background: #f9fafb;
+    border-radius: 4px;
+    border-left: 3px solid #667eea;
+}
+
+.reg-row.flags {
+    border-left-color: #10b981;
+}
+
+.reg-name {
+    font-weight: bold;
+    min-width: 50px;
+    color: #667eea;
+}
+
+.reg-hex {
+    min-width: 80px;
+    color: #059669;
+}
+
+.reg-bin {
+    min-width: 180px;
+    color: #7c3aed;
+    font-size: 11px;
+}
+
+.reg-dec {
+    color: #666;
+    font-size: 11px;
+}
+
+.flag {
+    margin-left: 10px;
+    padding: 2px 6px;
+    background: #e0e7ff;
+    border-radius: 3px;
+    font-size: 11px;
+}
+
+/* File Inputs */
+.file-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.file-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-input-group label {
+    min-width: 180px;
+    font-size: 14px;
+}
+
+.file-input-group input[type="file"] {
+    flex: 1;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.manual-input {
+    margin-top: 15px;
+}
+
+.manual-input textarea {
+    width: 100%;
+    height: 120px;
+    font-family: monospace;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    margin: 10px 0;
+}
+
+/* Buttons */
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5568d3;
+}
+
+.btn-secondary {
+    background: #764ba2;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #653d8b;
+}
+
+.btn-success {
+    background: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #059669;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+/* Control Buttons */
+.control-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.control-buttons input[type="number"] {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Execution Status */
+.execution-status {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.status-line {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.status-line strong {
+    color: #667eea;
+    display: inline-block;
+    min-width: 180px;
+}
+
+.status-line span {
+    font-family: monospace;
+    color: #333;
+}
+
+/* Command Interface */
+.command-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.command-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.command-output {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 15px;
+    border-radius: 6px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.command-output pre {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    white-space: pre-wrap;
+    margin: 0;
+}
+
+/* Memory Viewer */
+.memory-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.memory-controls label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.memory-controls input {
+    padding: 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.memory-view {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+}
+
+#memory-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+#memory-table thead {
+    background: #667eea;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+
+#memory-table th {
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+}
+
+#memory-table td {
+    padding: 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+#memory-table tbody tr:hover {
+    background: #f3f4f6;
+}
+
+/* Profiler Stats */
+.profiler-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.stat-item {
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 6px;
+    border-left: 4px solid #667eea;
+}
+
+.stat-label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #667eea;
+    font-family: monospace;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .control-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .profiler-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #5568d3;
+}
+
+/* Style for the program container */
+.program-code {
+    font-family: monospace;
+    white-space: pre; /* Essential for preserving line breaks and spaces */
+    background-color: #f4f4f4; /* Light gray background for the box */
+}
+
+/* Style for the currently executing line */
+.program-line-active {
+    background-color: #ffffa0; /* Bright yellow highlight */
+    font-weight: bold;
+    display: block; /* Ensure the highlight spans the full width */
+    padding-left: 5px;
+}
+
+/* Style for all individual lines (optional, for spacing) */
+.program-line {
+    margin: 0;
+    padding: 0 5px;
+}
+
+/* Assembler Section Styles */
+.assembler-input-group {
+    margin-bottom: 15px;
+}
+
+.assembler-input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+#assembly-input {
+    width: 100%;
+    min-height: 200px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    resize: vertical;
+}
+
+#assembly-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.assembler-output {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+    min-height: 50px;
+}
+
+.assembler-output:empty {
+    display: none;
+}
+
+/* Button styles for assembler */
+.btn-primary, .btn-secondary {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #45a049;
+}
+
+.btn-secondary {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn-secondary:hover {
+    background-color: #e0e0e0;
+}

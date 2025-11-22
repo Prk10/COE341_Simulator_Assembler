@@ -1,0 +1,12 @@
+/ Sample Assembly Program 4: AND Operation
+/ Demonstrates logical AND and masking
+
+        ORG 50
+START,  LDA VAL1        / Load value 1
+        AND MASK        / AND with mask
+        STA RESULT      / Store result
+        HLT
+VAL1,   HEX ABCD        / Value: 0xABCD
+MASK,   HEX 0FFF        / Mask: keep lower 12 bits
+RESULT, HEX 0
+        END

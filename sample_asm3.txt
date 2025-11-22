@@ -1,0 +1,17 @@
+/ Sample Assembly Program 3: Subroutine
+/ Demonstrates BSA (Branch and Save Address)
+
+        ORG 100
+BEGIN,  LDA X           / Load X
+        BSA SUBR        / Call subroutine
+        STA RESULT      / Store result
+        HLT
+X,      DEC 10
+RESULT, HEX 0
+
+/ Subroutine: Multiply by 2
+        ORG 200
+SUBR,   HEX 0           / Return address stored here
+        CIL             / Circulate left (multiply by 2)
+        BUN SUBR I      / Return (indirect)
+        END

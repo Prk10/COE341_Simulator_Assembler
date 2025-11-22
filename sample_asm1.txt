@@ -1,0 +1,12 @@
+/ Sample Assembly Program 1: Simple Addition
+/ This program adds two numbers
+
+        ORG 100
+START,  LDA NUM1        / Load first number
+        ADD NUM2        / Add second number
+        STA RESULT      / Store result
+        HLT             / Halt computer
+NUM1,   DEC 25          / First number (decimal 25)
+NUM2,   DEC 17          / Second number (decimal 17)
+RESULT, HEX 0           / Result location
+        END

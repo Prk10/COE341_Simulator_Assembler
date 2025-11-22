@@ -1,0 +1,11 @@
+// Sample Program 2: Loop with ISZ
+// This program demonstrates a counting loop
+000 2108
+001 7800
+002 1109
+003 3109
+004 6108
+005 4002
+006 7001
+108 FFFC
+109 0000

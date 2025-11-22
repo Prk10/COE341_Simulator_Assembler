@@ -1,0 +1,9 @@
+// Sample Program 1: Simple Addition
+// This program adds two numbers from memory
+000 2001
+001 1101
+002 3102
+003 7001
+100 0005
+101 000A
+102 0000
