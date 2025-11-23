@@ -221,19 +221,25 @@ function highlightCurrentInstruction(currentPC) {
         activeLine.classList.remove('program-line-active');
     }
 
-    // 2. Format the PC value to match the address format in the display
-    // Assuming a 12-bit address, padded to 3 hex digits: 0x000 to 0xFFF
+    // 2. Format the PC value to match the address format (e.g., 0x002 -> "002")
     const pcHex = currentPC.toString(16).toUpperCase().padStart(3, '0');
 
-    // 3. Find the new line to highlight using the data-address attribute
+    // 3. Find the new line to highlight
     const newLineToHighlight = displayArea.querySelector(`[data-address="${pcHex}"]`);
 
-    // 4. Apply the highlight class
+    // 4. Apply the highlight class AND SCROLL SAFELY
     if (newLineToHighlight) {
         newLineToHighlight.classList.add('program-line-active');
 
-        // Optional: Scroll the container to ensure the line is visible
-        newLineToHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // --- FIX START: Use scrollTop instead of scrollIntoView ---
+        // This calculates exactly where to scroll inside the box without moving the whole page
+        const containerHeight = displayArea.clientHeight;
+        const lineTop = newLineToHighlight.offsetTop;
+        const lineHeight = newLineToHighlight.clientHeight;
+        
+        // Scroll the container so the highlighted line is roughly in the middle
+        displayArea.scrollTop = lineTop - (containerHeight / 2) + (lineHeight / 2);
+        // --- FIX END ---
     }
 }
 
