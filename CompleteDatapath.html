@@ -160,10 +160,10 @@
             stroke-width: 3; 
             fill: none;
             transition: stroke 0.3s ease, stroke-width 0.3s ease;
-            cursor: pointer; /* Make lines clickable */
-            pointer-events: visibleStroke; /* Easier to click */
+            cursor: pointer;
+            pointer-events: visibleStroke;
         }
-        /* Wider invisible stroke for easier clicking could be added, but visualStroke is ok for now */
+        
         .bus-path:hover {
             stroke: #666; /* Subtle hover effect */
         }
@@ -194,11 +194,6 @@
     
     <div class="w-full md:w-48 mb-4 md:mb-0 p-2 bg-white rounded-lg shadow-md border border-gray-100 flex-shrink-0">
         <h2 class="text-sm font-bold text-gray-800 mb-2">Register/Bus Controls</h2>
-        <!-- <div class="text-[0.6rem] text-gray-500 mb-3 italic">
-            * Click arrows to highlight<br>
-            * Click labels to toggle<br>
-            * Click Bus to activate
-        </div> -->
         
         <div class="mb-2">
             <h3 class="font-semibold text-gray-600 mb-1 text-[0.65rem]">Bus Source (S2, S1, S0)</h3>
@@ -230,17 +225,17 @@
 </div>
 
 <script>
-    // --- Configuration Data (Added busId) ---
+    // --- Configuration Data for Registers ---
     const REGISTER_DATA = [
         { name: "Memory Unit", shortName: "M", value: "0x0000", size: "4096 x 16", height: 60, controls: { Read: 0, Write: 0 }, type: 'memory', busId: 7 },
-        { name: "Address Register (AR)", shortName: "AR", value: "0x001F", size: "12-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 1 },
-        { name: "Program Counter (PC)", shortName: "PC", value: "0x004F", size: "12-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 2 },
-        { name: "Data Register (DR)", shortName: "DR", value: "0x00FF", size: "16-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 3 },
-        { name: "Accumulator (AC)", shortName: "AC", value: "0x10F0", size: "16-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 4 },
-        { name: "Input Register (INPR)", shortName: "INPR", value: "0x1000", size: "8-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register' },
-        { name: "Instruction Register (IR)", shortName: "IR", value: "0x7090", size: "16-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 5 },
+        { name: "Address Register (AR)", shortName: "AR", value: "0x0000", size: "12-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 1 },
+        { name: "Program Counter (PC)", shortName: "PC", value: "0x000", size: "12-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 2 },
+        { name: "Data Register (DR)", shortName: "DR", value: "0x0000", size: "16-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 3 },
+        { name: "Accumulator (AC)", shortName: "AC", value: "0x0000", size: "16-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 4 },
+        { name: "Input Register (INPR)", shortName: "INPR", value: "0x00", size: "8-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register' },
+        { name: "Instruction Register (IR)", shortName: "IR", value: "0x0000", size: "16-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 5 },
         { name: "Temporary Register (TR)", shortName: "TR", value: "0x0000", size: "16-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register', busId: 6 },
-        { name: "Output Register (OUTR)", shortName: "OUTR", value: "0x1000", size: "8-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register' },
+        { name: "Output Register (OUTR)", shortName: "OUTR", value: "0x00", size: "8-bit", height: 40, controls: { LD: 0, INR: 0, CLR: 0 }, type: 'register' },
     ].map(reg => ({
         ...reg,
         width: reg.size.includes('12-bit') ? 120 : (reg.size.includes('8-bit') ? 90 : 140)
@@ -249,7 +244,7 @@
     const MUX_SELECT = { S2: 0, S1: 1, S0: 0 };
     let isMainBusActive = false;
 
-    // --- Bus Connection Logic ---
+    // Arrays for Bus Connection Logic 
     const TRANSFER_TO_RIGHT_BUS = ['M', 'AR', 'PC', 'DR', 'AC', 'TR', 'IR']; 
     const TAKE_FROM_LEFT_BUS = ['M', 'AR', 'PC', 'DR', 'TR', 'IR', 'OUTR']; 
     
@@ -260,7 +255,7 @@
         return bin.padStart(numBits, '0');
     }
 
-    // --- VISUALIZATION API ---
+    // --- Visualization functions for use by othe rparts of app ---
 
     // Resets all highlights and signals to 0
     window.resetVisualization = function() {
@@ -284,7 +279,7 @@
         isMainBusActive = false;
     }
 
-    // Main function to animate a transfer
+    // function to animate transfer
     window.visualizeTransfer = function(sourceName, destName, RegisterToIncrement, RegisterToCLR, highlightALU, highlightE, ALUTransfer) {
         resetVisualization(); // Clear previous state
 
@@ -292,9 +287,9 @@
         const destData = REGISTER_DATA.find(r => r.shortName === destName);
 
         if (!sourceData || !destData) {
-            // Handle case where we might just want to highlight ALU ops without bus transfer
+            // Handle case where we might just want to highlight operations that don't need bus
             if(highlightALU || highlightE || sourceName === "AC") {
-                 // Just proceed
+                 // Do nothing, proceed
             } else {
                 console.error("Invalid register names for transfer");
                 return;
@@ -302,35 +297,35 @@
         }
 
         if(sourceData && destData) {
-            // 1. Highlight Registers (Common for both cases)
+            // Highlight Registers
             const sourceEl = document.querySelector(`[data-reg-id="${sourceName}"] .register-box`);
             const destEl = document.querySelector(`[data-reg-id="${destName}"] .register-box`);
             if(sourceEl) sourceEl.classList.add('highlight-active');
             if(destEl) destEl.classList.add('highlight-active');
 
-            // CHECK FOR SPECIAL CASE: DR -> AC (Direct Transfer via ALU, NO BUS)
+            // check for the case where we have AC <- DR; we don't need bus for this
             const isDrToAc = (sourceName === 'DR' && destName === 'AC');
 
             if (isDrToAc) {
-                // ALWAYS Highlight DR -> ALU Link for this transfer
+                // Highlight DR -> ALU Link for this transfer
                 const drAluLink = document.getElementById('dr-alu-link');
                 if(drAluLink) {
                     drAluLink.classList.add('bus-active');
                     drAluLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
                 }
 
-                // ALWAYS Highlight ALU -> AC Link (RESULT) for this transfer
+                // Highlight ALU -> AC Link (result) for this transfer
                 const aluAcLink = document.getElementById('alu-ac-link');
                 if(aluAcLink) {
                     aluAcLink.classList.add('bus-active');
                     aluAcLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
                 }
 
-                // HIGHLIGHT ALU BOX (Path goes through it)
+                // Highlight ALU
                 const alu = document.querySelector('#alu-block');
                 if(alu) alu.classList.add('highlight-active');
 
-                // CONDITIONAL: Highlight Feedback (AC -> ALU) ONLY if ALUTransfer is FALSE (Arithmetic Operation)
+                // Highlight ALU-AC link only if ALU operation is NOT a transfer
                 if (!ALUTransfer) {
                     const acAluLink = document.getElementById('ac-alu-link');
                     if(acAluLink) {
@@ -342,14 +337,14 @@
             } else {
                 // --- STANDARD BUS TRANSFER LOGIC ---
                 
-                // 2. Highlight Source Output Arrow (To Right Bus)
+                // Highlight Source Output Arrow (To Right column)
                 const outputArrow = document.querySelector(`[data-arrow-type="out"][data-reg="${sourceName}"]`);
                 if (outputArrow) {
                     outputArrow.classList.add('bus-active');
                     outputArrow.setAttribute('marker-end', 'url(#arrowhead-right-active)');
                 }
 
-                // 3. Highlight Main Bus (U-Shape)
+                // Highlight Main Bus (U-Shape)
                 const leftBus = document.getElementById('left-bus');
                 const rightBus = document.getElementById('right-bus');
                 const busMux = document.getElementById('bus-mux');
@@ -359,7 +354,7 @@
                 if(busMux) busMux.classList.add('bus-active');
                 if(mainBusPath) mainBusPath.classList.add('bus-active');
 
-                // 4. Highlight Destination Input Arrow (From Left Bus)
+                // Highlight Destination Input Arrow (From Left column)
                 const inputArrow = document.querySelector(`[data-arrow-type="in"][data-reg="${destName}"]`);
                 if (inputArrow) {
                     inputArrow.classList.add('bus-active');
@@ -367,7 +362,7 @@
                 }
             }
 
-            // 5. Set Control Signal (LD=1 or Write=1)
+            // Set Control Signal (LD=1 (for Registers) or Write=1 (for memory))
             const controlKey = (destName === 'M') ? 'Write' : 'LD';
             const controlSpan = document.querySelector(`[data-reg-id="${destName}"] [data-control="${controlKey}"]`);
             if (controlSpan) {
@@ -375,6 +370,7 @@
                 controlSpan.classList.add('control-active');
             }
 
+            // set 'Read' of memory if meory is read
             const controlKeyM = 'Read';
             const controlSpanM = document.querySelector(`[data-reg-id="${sourceName}"] [data-control="${controlKeyM}"]`);
             if (controlSpanM) {
@@ -382,7 +378,7 @@
                 controlSpanM.classList.add('control-active');
             }
 
-            // 6. Update Bus Selection Display (Only if Bus is used)
+            // Update Bus Selection Display (Only if Bus is used)
             if (!isDrToAc) {
                 const busId = sourceData.busId;
                 const busSourceEl = document.getElementById('bus-source');
@@ -412,7 +408,7 @@
                 if(muxInputs) muxInputs.innerHTML = '<span class="text-xs text-gray-400">Inactive</span>';
             }
 
-            // NEW: Highlight AR -> Memory Connection if Memory is accessed
+            // Highlight AR -> Memory Connection if Memory is accessed
             if (sourceName === 'M' || destName === 'M') {
                 const arMemLink = document.getElementById('ar-memory-link');
                 if (arMemLink) {
@@ -446,19 +442,15 @@
         const alu = document.querySelector('#alu-block')
         const e = document.querySelector('#e-block')
         if (alu) {
-            // Standard ALU Highlighting for non-DR-to-AC cases (or additional cases)
             if (highlightALU) {
                 alu.classList.add('highlight-active');
                 
-                // Whenever ALU is highlighted, highlight connection to AC (Result)
-                // This covers generic cases like CMA, etc.
                 const aluAcLink = document.getElementById('alu-ac-link');
                 if(aluAcLink) {
                     aluAcLink.classList.add('bus-active');
                     aluAcLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
                 }
                 
-                // Highlight Feedback for specific non-DR cases (like CMA)
                 if(sourceName === 'AC') {
                      const acAluLink = document.getElementById('ac-alu-link');
                      if(acAluLink) {
@@ -466,17 +458,7 @@
                         acAluLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
                     }
                 }
-                
-                // Highlight INPR link if INPR is source
-                if(sourceName === 'INPR') {
-                    const inprAluLink = document.getElementById('inpr-alu-link');
-                    if(inprAluLink) {
-                        inprAluLink.classList.add('bus-active');
-                        inprAluLink.setAttribute('marker-end', 'url(#arrowhead-right-active)');
-                    }
-                }
             }
-            // Note: We don't remove class here if isDrToAc added it.
             else if (sourceName !== 'DR' || destName !== 'AC') {
                 alu.classList.remove('highlight-active');
             }
@@ -487,7 +469,7 @@
         }
     }
 
-    // NEW: Function to Update Register Values from Outside
+    // Function to update register values from other parts of app
     window.updateRegisterValues = function(updates) {
         for (const [regName, newVal] of Object.entries(updates)) {
             // Update Internal Data
@@ -626,7 +608,7 @@
 
         if (!svg || !datapathWrapper || !leftBus || !rightBus || !registersColumn) return;
 
-        // Add Arrowhead Definitions (Small)
+        // Add Arrowhead Definitions
         const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
         defs.innerHTML = `
             <marker id="arrowhead-right" markerWidth="3" markerHeight="3" refX="3" refY="1.5" orient="auto" class="arrowhead">
@@ -667,11 +649,11 @@
         const leftBusCenterX = leftBusRect.left + (busWidth / 2);
         const rightBusLeftEdge = rightBusRect.left; 
         
-        // 1. Main U-Bus (Bottom Connector)
+        // Main U-Bus (Bottom Connector)
         const hBusStrokeWidth = busWidth;
         const hBusCenterY = leftBusRect.bottom - (hBusStrokeWidth / 2); 
         const hBus = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        hBus.setAttribute('id', 'main-bus-path'); // ID for targeting
+        hBus.setAttribute('id', 'main-bus-path');
         hBus.setAttribute('stroke', 'var(--bus-color)');
         hBus.setAttribute('stroke-width', hBusStrokeWidth);
         hBus.setAttribute('x1', leftBusCenterX);
@@ -688,7 +670,7 @@
         const drawPath = (d, markerBase) => {
             const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
             path.setAttribute('d', d);
-            path.setAttribute('class', 'bus-path'); // Start inactive
+            path.setAttribute('class', 'bus-path');
             if (markerBase) path.setAttribute('marker-end', `url(#${markerBase})`);
             
             path.onclick = (e) => {
@@ -696,19 +678,18 @@
             };
             
             svg.appendChild(path);
-            return path; // Return path for later targeting
+            return path;
         };
 
         const drawLine = (x1, y1, x2, y2, markerBase, regName, type) => {
              const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute('class', 'bus-path'); // Start inactive
+            line.setAttribute('class', 'bus-path');
             line.setAttribute('x1', x1); 
             line.setAttribute('y1', y1);
             line.setAttribute('x2', x2); 
             line.setAttribute('y2', y2);
             if(markerBase) line.setAttribute('marker-end', `url(#${markerBase})`);
             
-            // ADDED: Attributes for selection
             line.setAttribute('data-reg', regName);
             line.setAttribute('data-arrow-type', type);
 
@@ -718,7 +699,7 @@
             svg.appendChild(line);
         }
 
-        // 2. Standard Register Connections
+        // Standard Register Connections
         registerElements.forEach((regEl, index) => {
             const regRect = getRelativeRect(regEl);
             const regRightEdge = regRect.right;
@@ -729,11 +710,11 @@
             const loadOffset = -3;  
             const arrowSpacing = 4; 
 
-            // Transfer to Right Bus (Output)
+            // Transfer to Right Column (Output)
             if (TRANSFER_TO_RIGHT_BUS.includes(regData.shortName)) {
                 drawLine(regRightEdge, midY + outputOffset, rightBusLeftEdge - arrowSpacing, midY + outputOffset, 'arrowhead-right', regData.shortName, 'out');
                 
-                // Draw Bus ID
+                // Draw Numbers for registers connected to Bus
                 if (regData.busId !== undefined) {
                     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
                     text.setAttribute("x", rightBusLeftEdge + 10); 
@@ -747,23 +728,21 @@
                 }
             }
             
-            // Take from Left Bus (Input)
+            // Take from Left Column (Input)
             if (TAKE_FROM_LEFT_BUS.includes(regData.shortName)) {
                 drawLine(leftBusCenterX, midY + loadOffset, regLeftEdge - arrowSpacing, midY + loadOffset, 'arrowhead-right', regData.shortName, 'in');
             }
         });
 
-        // 3. DIRECT CONNECTION: AR -> MEMORY (ADDRESS)
+        // Direct Link between AR and Memory
         const memEl = document.querySelector('[data-reg-id="M"]');
         const arEl = document.querySelector('[data-reg-id="AR"]');
         if(memEl && arEl) {
             const memRect = getRelativeRect(memEl);
             const arRect = getRelativeRect(arEl);
             
-            // Define a vertical path line to the right of the registers, but left of the Bus lines
-            const addressPathX = rightBusRect.left - 40; // Adjust spacing
+            const addressPathX = rightBusRect.left - 40;
 
-            // Draw Line from AR Right -> Up -> Memory Right (Address)
             const arMemPath = drawPath(`M ${arRect.right},${arRect.centerY} 
                       L ${addressPathX},${arRect.centerY} 
                       L ${addressPathX},${memRect.centerY + 10} 
@@ -771,7 +750,6 @@
             
             arMemPath.id = "ar-memory-link";
 
-            // Add Label "Addr"
             const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
             text.setAttribute("x", addressPathX - 22); 
             text.setAttribute("y", (arRect.centerY + memRect.centerY)/2); 
@@ -781,30 +759,28 @@
             svg.appendChild(text);
         }
 
-        // 4. ALU Connections (Modified for Direct Connections)
+        // ALU Connections
         if (aluEl) {
             const aluRect = getRelativeRect(aluEl);
             const acRect = getRelativeRect(document.querySelector('[data-reg-id="AC"]'));
             const drRect = getRelativeRect(document.querySelector('[data-reg-id="DR"]'));
             const inprRect = getRelativeRect(document.querySelector('[data-reg-id="INPR"]'));
             
-            // A. ALU -> AC (Output / Result)
+            // ALU -> AC (Output)
             const aluToAcY = acRect.centerY + 4; 
             const aluAcPath = drawPath(`M ${aluRect.right},${aluToAcY} L ${acRect.left - 4},${aluToAcY}`, 'arrowhead-right');
             aluAcPath.id = "alu-ac-link"; // Add ID for targeting
 
-            // B. DIRECT CONNECTION: DR -> ALU (Input 1)
-            // Starting from Bottom Left of DR to ensure separation from Bus lines
+            // DR -> ALU (Input 1)
             const drOutX = drRect.left + 15;
             const drOutY = drRect.bottom;
             const aluInX1 = aluRect.left + 20; 
             const aluInY1 = aluRect.top;
             
-            // Draw from DR Bottom -> Down -> ALU Top
             const drAluPath = drawPath(`M ${drOutX},${drOutY} L ${drOutX},${drOutY + 10} L ${aluInX1},${drOutY + 10} L ${aluInX1},${aluInY1 - 3}`, 'arrowhead-right');
-            drAluPath.id = "dr-alu-link"; // Add ID for targeting
+            drAluPath.id = "dr-alu-link";
 
-            // C. INPR -> ALU 
+            // INPR -> ALU 
             const inprOutX = inprRect.left;
             const inprOutY = inprRect.centerY;
             const aluIn2X = aluRect.left + 15; 
@@ -813,14 +789,12 @@
             const inprAluPath = drawPath(`M ${inprOutX},${inprOutY} L ${aluIn2X},${inprOutY} L ${aluIn2X},${aluIn2Y + 3}`, 'arrowhead-right');
             inprAluPath.id = "inpr-alu-link"; // Add ID
 
-            // D. DIRECT CONNECTION: AC -> ALU (Feedback Input)
-            // Loop from AC Bottom -> Left -> Up -> ALU Bottom/Side
-            const acOutX = acRect.left + 15; // Slightly offset from left edge
+            // AC -> ALU
+            const acOutX = acRect.left + 15;
             const acOutY = acRect.bottom;
             const aluInputMidY = aluRect.centerY + (aluRect.height / 4);
             const aluEntryX = aluRect.left - 3; 
 
-            // Draw Feedback Loop
             const acAluPath = drawPath(`M ${acOutX},${acOutY} 
                       L ${acOutX},${acOutY + 10} 
                       L ${aluEntryX - 15},${acOutY + 10} 
@@ -828,10 +802,9 @@
                       L ${aluEntryX},${aluInputMidY}`, 'arrowhead-right');
             acAluPath.id = "ac-alu-link"; // Add ID
 
-            // E. E Flip-Flop Connections
+            // E Flip-Flop Connections
             if(eEl) {
                 const eRect = getRelativeRect(eEl);
-                // Arrow from ALU to E (Carry Out)
                 const aluOutputToEY = aluRect.top + (aluRect.height * 0.3);
                 drawPath(`M ${aluRect.right},${aluOutputToEY} L ${eRect.left - 3},${aluOutputToEY}`, 'arrowhead-right');
             }
@@ -875,21 +848,21 @@
     window.onload = initializeDatapath;
     window.onresize = () => setTimeout(drawDatapathConnections, 100);
 
-    // --- Message Listener for Safe Cross-Origin Communication ---
+    // Message Listener for dealing with CORS Problem
     window.addEventListener('message', function(event) {
         const msg = event.data;
 
-        // 1. Handle Register Value Updates
+        // Handle Register Value Updates
         if (msg.type === 'UPDATE_REGISTERS') {
             window.updateRegisterValues(msg.data);
         }
         
-        // 2. Handle Animation/Highlighting
+        // Handle Animation/Highlighting
         else if (msg.type === 'HIGHLIGHT_TRANSFER') {
             window.visualizeTransfer(msg.source, msg.dest, msg.increment, msg.clr, msg.ALUUsed, msg.EUsed, msg.ALUTransfer);
         }
         
-        // 3. Handle Reset
+        // Handle Reset
         else if (msg.type === 'RESET_ANIMATIONS') {
             window.resetVisualization();
         }

@@ -1,4 +1,4 @@
-// assembler.js - Assembler for Mano's Basic Computer
+// Assembler for Basic Computer
 
 class Assembler {
     constructor() {
@@ -32,23 +32,12 @@ class Assembler {
             'SZA': 0x7004,
             'SZE': 0x7002,
             'HLT': 0x7001,
-            // I/O instructions (optional)
-            'INP': 0xF800,
-            'OUT': 0xF400,
-            'SKI': 0xF200,
-            'SKO': 0xF100,
-            'ION': 0xF080,
-            'IOF': 0xF040
         };
 
         this.pseudoInstructions = ['ORG', 'END', 'DEC', 'HEX'];
     }
 
-    /**
-     * Main assemble function - performs two-pass assembly
-     * @param {string} sourceCode - Assembly source code
-     * @returns {object} - {success: boolean, programData: [], errors: []}
-     */
+
     assemble(sourceCode) {
         this.reset();
         const lines = this.preprocessCode(sourceCode);
@@ -77,9 +66,6 @@ class Assembler {
         this.errors = [];
     }
 
-    /**
-     * Preprocess source code - remove comments, normalize whitespace
-     */
     preprocessCode(sourceCode) {
         const lines = sourceCode.split('\n');
         const processed = [];
@@ -112,9 +98,7 @@ class Assembler {
         return processed;
     }
 
-    /**
-     * First pass: Build symbol table
-     */
+    /* First pass: Build symbol table */
     firstPass(lines) {
         this.locationCounter = 0;
 
@@ -170,9 +154,7 @@ class Assembler {
         }
     }
 
-    /**
-     * Second pass: Generate machine code
-     */
+    /* Second pass: Generate machine code */
     secondPass(lines) {
         this.locationCounter = 0;
         const programData = [];
@@ -267,8 +249,7 @@ class Assembler {
                         this.errors.push(`Line ${line.lineNumber}: MRI instruction '${instruction}' requires an address`);
                     }
 
-                    // Construct machine code: [I][Opcode][Address]
-                    // Bit 15: I, Bits 14-12: Opcode, Bits 11-0: Address
+                    // Construct machine code: [I][Opcode][Address] Bit 15: I, Bits 14-12: Opcode, Bits 11-0: Address
                     const machineCode = (indirect << 15) | (opcode << 12) | (address & 0xFFF);
 
                     programData.push({
@@ -283,31 +264,23 @@ class Assembler {
         return programData;
     }
 
-    /**
-     * Tokenize a line of assembly code
-     */
+    /* Tokenize a line of assembly code */
     tokenize(line) {
         // Split by whitespace and commas
         return line.split(/[\s,]+/).filter(token => token.length > 0);
     }
 
-    /**
-     * Check if token is an instruction
-     */
+    /* Check if token is an instruction */
     isInstruction(token) {
         return this.mriTable.hasOwnProperty(token) || this.nonMriTable.hasOwnProperty(token);
     }
 
-    /**
-     * Check if token is a pseudo-instruction
-     */
+    /* Check if token is a pseudo-instruction */
     isPseudoInstruction(token) {
         return this.pseudoInstructions.includes(token);
     }
 
-    /**
-     * Parse a number (decimal or hexadecimal)
-     */
+    /* Parse a number (decimal or hexadecimal) */
     parseNumber(str) {
         str = str.trim();
 
@@ -336,9 +309,7 @@ class Assembler {
         return isNaN(value) ? null : value;
     }
 
-    /**
-     * Parse an address (number or symbol)
-     */
+    /* Parse an address (number or symbol) */
     parseAddress(str) {
         // Try as number first
         const numValue = this.parseNumber(str);
@@ -354,9 +325,7 @@ class Assembler {
         return null;
     }
 
-    /**
-     * Convert program data to hex format for display
-     */
+    /* Convert program data to hex format for display */
     programDataToHex(programData) {
         let output = '';
         for (const entry of programData) {
@@ -367,9 +336,7 @@ class Assembler {
         return output;
     }
 
-    /**
-     * Generate symbol table listing
-     */
+    /* Generate symbol table listing */
     getSymbolTableListing() {
         let output = 'Symbol Table:\n';
         output += '=============\n';

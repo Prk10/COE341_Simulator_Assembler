@@ -1,4 +1,4 @@
-// computer.js - Mano's Basic Computer Simulator Logic
+// Basic Computer Simulator Logic
 
 class BasicComputer {
     constructor() {
@@ -22,11 +22,9 @@ class BasicComputer {
         this.E = 0;     // Extended accumulator (carry)
         this.R = 0;     // Interrupt flip-flop
         this.IEN = 0;   // Interrupt enable
-        this.FGI = 0;   // Input flag; input-output not needed according to prof
-        this.FGO = 1;   // Output flag; input-output not needed according to prof
 
         // Execution state
-        this.state = 'IDLE';  // IDLE, FETCH, DECODE, INDIRECT, EXECUTE
+        this.state = 'IDLE';  // Can be IDLE, FETCH, DECODE, INDIRECT, EXECUTE
         this.currentInstruction = 0;
         this.currentMicroOp = '';
         this.changedComponents = [];
@@ -83,7 +81,7 @@ class BasicComputer {
         this.instructionName = '';
     }
 
-    // Load program into memory; Review Masking Logic-might change based on input we have
+    // Load program into memory
     loadProgram(programData) {
         // programData is array of {address, instruction}
         this.PC = programData[0].address & 0xFFF;
@@ -154,8 +152,7 @@ class BasicComputer {
                 if (ir_bits & 0x001) return 'HLT';
                 return 'NOP';
             } else {
-                // I/O instructions (not implemented in core requirements)
-                return 'I/O';
+                return 'I/O'; // Not Implemented
             }
         } else {
             // Memory-reference
@@ -174,12 +171,7 @@ class BasicComputer {
         this.changedComponents = [];
         this.totalCycles++;
 
-        // Check interrupt condition (simplified - not fully implemented)
-        if (this.SC === 0 && this.R === 1) {
-            return this.executeInterruptCycle();
-        }
-
-        // Execute based on timing signal; we need to figure out a better way to do this
+        // Execute based on timing signal
         switch (this.SC) {
             case 0:  // T0
                 return this.executeT0();
@@ -242,8 +234,7 @@ class BasicComputer {
         return true;
     }
 
-    // T2: Decode -
-    //  Decode IR, AR <- IR(0-11), I <- IR(15)
+    // T2: Decode IR, AR <- IR(0-11), I <- IR(15)
     executeT2() {
         this.state = 'DECODE';
         this.AR = this.getAddress(this.IR);
@@ -309,7 +300,7 @@ class BasicComputer {
         }
     }
 
-    // T4: Execute memory-reference instructions (part 1) //ADD this.ComponentsInInstruction
+    // T4: Execute memory-reference instructions (part 1)
     executeT4() {
         this.state = 'EXECUTE';
         const opcode = this.getOpcode(this.IR);
@@ -776,14 +767,6 @@ class BasicComputer {
         if (!executed) {
             this.currentMicroOp = 'T3: No operation';
         }
-    }
-
-    // Execute interrupt cycle (simplified)
-    executeInterruptCycle() {
-        // Interrupt handling would go here
-        this.R = 0;
-        this.SC = 0;
-        return true;
     }
 
     // Execute one complete instruction

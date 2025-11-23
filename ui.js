@@ -1,8 +1,8 @@
-// ui.js - User Interface Logic for Basic Computer Simulator
+// User Interface Logic for  Simulator
 
 let originalProgramData = []; 
 
-// UI Update Functions
+// Function for Updating UI
 function updateUI() {
     updateRegisters();
     updateFlags();
@@ -14,7 +14,6 @@ function updateRegisters() {
     // Update register values
     const iframe = document.querySelector('iframe'); 
     
-    // We only check if the iframe exists, we don't need to check for the function anymore
     if (iframe && iframe.contentWindow) {
         const updates = {
             "AR": computer.toHex(computer.AR, 3),
@@ -28,8 +27,6 @@ function updateRegisters() {
             "M": computer.toHex(computer.memory[computer.AR], 4)
         };
         
-        // Send a safe message to the iframe
-        // '*' allows any origin (safe for local testing), or use 'http://127.0.0.1:5500' if using Live Server
         iframe.contentWindow.postMessage({ 
             type: 'UPDATE_REGISTERS', 
             data: updates 
@@ -117,7 +114,7 @@ function resetAnimations() {
     }
 }
 
-// Function to update the command output console
+// Function to update the output console
 function appendToOutput(message) {
     const outputElement = document.getElementById('command-output');
     if (outputElement) {
@@ -126,22 +123,19 @@ function appendToOutput(message) {
     }
 }
 
-// Function to display the loaded program content in the new HTML textarea
+// Function to display the loaded program content
 function displayLoadedProgram(programText) {
     const displayArea = document.getElementById('loaded-program-display');
     if (!displayArea) return;
 
-    // Clear previous content
     displayArea.innerHTML = ''; 
 
-    // Split content into individual lines
     const lines = programText.trim().split('\n');
 
     lines.forEach((line, index) => {
         const lineElement = document.createElement('div');
-        // Add a class for styling and a data attribute for easy identification
         lineElement.classList.add('program-line');
-        lineElement.dataset.address = line.trim().split(' ')[0]; // Assuming address is the first word
+        lineElement.dataset.address = line.trim().split(' ')[0];
         lineElement.textContent = line;
         displayArea.appendChild(lineElement);
     });
@@ -162,10 +156,8 @@ function loadProgramFile() {
         const content = e.target.result;
         parseProgramContent(content);
 
-        // 2. *** Display the content in the new 'Loaded Program' textarea ***
         displayLoadedProgram(content); 
 
-        // 3. Update the console/status
         appendToOutput(`Program loaded from file: ${file.name}`);
     };
     reader.readAsText(file);
@@ -185,7 +177,6 @@ function loadDataFile() {
         const content = e.target.result;
         parseDataContent(content);
 
-        // 2. Update the console/status
         appendToOutput(`Data loaded from file: ${file.name}`);
     };
     reader.readAsText(file);
@@ -204,7 +195,6 @@ function loadAssemblyFile() {
     const reader = new FileReader();
     reader.onload = function(e) {
         const content = e.target.result;
-        // Set the content into the textarea
         document.getElementById('assembly-input').value = content;
         appendToOutput(`Assembly source loaded from: ${file.name}`);
     };
@@ -215,31 +205,27 @@ function highlightCurrentInstruction(currentPC) {
     const displayArea = document.getElementById('loaded-program-display');
     if (!displayArea) return;
 
-    // 1. Remove highlight from ALL previously active lines
+    // Remove highlight from ALL previously active lines
     const activeLine = displayArea.querySelector('.program-line-active');
     if (activeLine) {
         activeLine.classList.remove('program-line-active');
     }
 
-    // 2. Format the PC value to match the address format (e.g., 0x002 -> "002")
+    // Format the PC value to match the address format
     const pcHex = currentPC.toString(16).toUpperCase().padStart(3, '0');
 
-    // 3. Find the new line to highlight
+    // Find the new line to highlight
     const newLineToHighlight = displayArea.querySelector(`[data-address="${pcHex}"]`);
 
-    // 4. Apply the highlight class AND SCROLL SAFELY
+    // Apply the highlight class
     if (newLineToHighlight) {
         newLineToHighlight.classList.add('program-line-active');
 
-        // --- FIX START: Use scrollTop instead of scrollIntoView ---
-        // This calculates exactly where to scroll inside the box without moving the whole page
         const containerHeight = displayArea.clientHeight;
         const lineTop = newLineToHighlight.offsetTop;
         const lineHeight = newLineToHighlight.clientHeight;
         
-        // Scroll the container so the highlighted line is roughly in the middle
         displayArea.scrollTop = lineTop - (containerHeight / 2) + (lineHeight / 2);
-        // --- FIX END ---
     }
 }
 
@@ -250,7 +236,6 @@ function loadProgramManual() {
         return;
     }
     parseProgramContent(content);
-    // 2. *** Display the content in the new 'Loaded Program' textarea ***
     displayLoadedProgram(content); 
 }
 
@@ -259,7 +244,7 @@ function parseProgramContent(content) {
         const lines = content.split('\n');
         const programData = [];
         
-        // 1. Clear previous saved program
+        // Clear previous saved program
         originalProgramData = [];
 
         for (let line of lines) {
@@ -274,7 +259,7 @@ function parseProgramContent(content) {
                 if (!isNaN(address) && !isNaN(instruction)) {
                     programData.push({ address, instruction });
                     
-                    // 2. Save instruction for Reset
+                    // Save instruction for Reset
                     originalProgramData.push({ address: address, value: instruction });
                 }
             }
@@ -290,7 +275,7 @@ function parseProgramContent(content) {
         updateUI();
         viewMemory();
         
-        // 3. Highlight the first line immediately
+        // Highlight the first line immediately
         if(programData.length > 0) {
              highlightCurrentInstruction(programData[0].address);
         }
@@ -317,7 +302,7 @@ function parseDataContent(content) {
                 if (!isNaN(address) && !isNaN(data)) {
                     dataArray.push({ address, data });
 
-                    // 1. Save data value for Reset
+                    // Save data value for Reset
                     originalProgramData.push({ address: address, value: data });
                 }
             }
@@ -349,7 +334,7 @@ function executeNextCycle() {
     updateUI();
     highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
 
-    // Get the PC value (address of the NEXT instruction)
+    // Get the PC value
     const currentPC = computer.PC; 
     
     // Highlight the current instruction running
@@ -381,7 +366,7 @@ function executeFastCycle() {
     updateUI();
     highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
 
-    // Get the PC value (address of the NEXT instruction)
+    // Get the PC value
     const currentPC = computer.PC; 
     
     // Highlight the current instruction running
@@ -401,7 +386,7 @@ function executeNextInstruction() {
     updateUI();
     highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
 
-    // Get the PC value (address of the NEXT instruction)
+    // Get the PC value
     const currentPC = computer.PC; 
     
     // Highlight the current instruction running
@@ -462,10 +447,10 @@ function executeRun() {
 }
 
 function executeReset() {
-    // 1. Reset Hardware Registers
+    // Reset Hardware Registers
     computer.reset();
 
-    // 2. Restore Memory from the saved backup
+    // Restore Memory from the saved backup
     if (originalProgramData && originalProgramData.length > 0) {
         originalProgramData.forEach(item => {
             computer.memory[item.address] = item.value;
@@ -475,7 +460,7 @@ function executeReset() {
         appendToOutput('System Reset: Registers cleared.');
     }
 
-    // 3. Clear the "Stale" UI Status
+    // Clear the previous UI Status
     if (computer) {
         computer.currentInstruction = 0; 
         computer.instructionName = "Ready"; 
@@ -483,20 +468,20 @@ function executeReset() {
         computer.state = 'FETCH'; 
     }
 
-    // 4. Update the UI
+    // Update the UI
     updateUI();
     resetAnimations(); // Resets the Datapath animation
     
-    // 5. Force Highlight to First Instruction (Address 0)
+    // Force Highlight to First Instruction (Address 0)
     highlightCurrentInstruction(0);
 
-    // 6. Scroll the program list to the top
+    // Scroll the program list to the top
     const displayArea = document.getElementById('loaded-program-display');
     if (displayArea) {
         displayArea.scrollTop = 0;
     }
 
-    // 7. Refresh Memory View
+    // Refresh Memory View
     document.getElementById('memory-tbody').innerHTML = '';
     viewMemory();
 }
@@ -728,7 +713,6 @@ window.addEventListener('load', function() {
 });
 
 // Assembler UI Functions
-
 function assembleCode() {
     const sourceCode = document.getElementById('assembly-input').value;
 
@@ -831,14 +815,10 @@ function switchView(viewName) {
     }
 }
 
-// ui.js - Add this to the end
-
 function launchSimulator() {
     const overlay = document.getElementById('intro-overlay');
     
-    // Add the fade-out class to trigger CSS transition
     overlay.classList.add('fade-out');
     
-    // Optional: Play a sound or initialize something here if needed
     console.log("Simulator Launched");
 }
