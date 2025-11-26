@@ -1,5 +1,8 @@
 # Mano's Basic Computer Simulator
 
+## Link
+https://coe341sim.netlify.app/
+
 ## Overview
 This is a web-based simulator for Mano's Basic Computer as described in "Computer System Architecture (3rd Edition)". The simulator provides a complete interactive implementation of the computer architecture with visual feedback and detailed execution control.
 
