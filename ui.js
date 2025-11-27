@@ -466,7 +466,9 @@ function executeReset() {
         computer.instructionName = "Ready"; 
         computer.currentMicroOp = "T0: AR <- PC";
         computer.state = 'FETCH'; 
+        computer.PC = originalProgramData[0].address;
     }
+
 
     // Update the UI
     updateUI();
@@ -738,6 +740,7 @@ function assembleCode() {
 
         // Load into computer memory
         computer.loadProgram(result.programData);
+        parseProgramContent(hexOutput);
         appendToOutput('Program loaded into memory');
 
         updateUI();

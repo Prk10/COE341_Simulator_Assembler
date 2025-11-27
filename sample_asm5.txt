@@ -1,0 +1,15 @@
+	ORG 0
+        LDA MONE        / Load -1 (Actually -4 based on data below)
+        STA COUNT       / Store loop counter (Initialize ONCE)
+
+LOOP,   LDA VALUE       / <--- LABEL MOVED HERE
+        INC             / Increment value (AC = AC + 1)
+        STA VALUE       / Store back
+        ISZ COUNT       / Increment counter, skip next if zero
+        BUN LOOP        / Branch back to loop if not skipped
+        HLT             / Halt when loop is done
+
+MONE,   DEC -4          / Counter: -4 (loop 4 times)
+COUNT,  HEX 0           / Counter storage
+VALUE,  HEX 0           / Value to increment
+        END
