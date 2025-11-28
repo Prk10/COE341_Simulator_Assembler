@@ -209,8 +209,8 @@ RESULT, HEX 0           / Result location
 ```assembly
         ORG 0
         LDA MONE        / Load -1
-LOOP,   STA COUNT       / Store loop counter
-        LDA VALUE       / Load value
+        STA COUNT       / Store loop counter
+LOOP,   LDA VALUE       / Load value
         INC             / Increment value
         STA VALUE       / Store back
         ISZ COUNT       / Increment counter, skip if zero
