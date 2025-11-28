@@ -10,7 +10,7 @@
     <script src="assembler.js"></script>
     <script src="ui.js"></script>
 </head>
-<body>
+<body style="overflow: hidden;">
     
     <div id="intro-overlay">
         <div class="intro-content">
@@ -19,14 +19,21 @@
             <button id="launch-btn" onclick="launchSimulator()">Launch Simulator</button>
         </div>
     
-        <div class="intro-credits">
-            <p>Created by:</p>
-            <ul>
-                <li>Adrish Danka</li>
-                <li>Fadil Imran</li>
-                <li>Prerana Ramkumar</li>
-                <li>Rizwanul Abidin Asim</li>
-            </ul>
+        <div class="intro-credits" style="margin-top: 40px; color: #fff; width: 100%; text-align: right;">
+            
+            <div style="display: inline-block; text-align: right;">
+                <p style="margin-bottom: 5px;">Created by:</p>
+                <ul>
+                    <li>Adrish Danka</li>
+                    <li>Fadil Imran</li>
+                    <li>Prerana Ramkumar</li>
+                    <li>Rizwanul Abidin Asim</li>
+                </ul>
+            </div>
+
+            <p style="text-align: center; margin-top: 30px; font-size: 0.7rem; opacity: 0.8;">
+                For Feedback, Contact us on b00101050@aus.edu (Fadil), b00099449@aus.edu (Rizwan), g00100339@aus.edu (Prerana), or b00099914@aus.edu (Adrish)
+            </p>
         </div>
 
         <p class="Feedback">For Feedback, Contact us on b00101050@aus.edu (Fadil), b00099449@aus.edu (Rizwan), g00100339@aus.edu (Prerana), or b00099914 (Adrish)</p>
@@ -276,8 +283,7 @@ RESULT, HEX 0
 
                 <div id="assembler-output" class="assembler-output"></div>
             </div>
-        </div>
-        
+        </div> 
         <footer style="text-align: center; margin-top: 50px; padding-bottom: 20px; color: #f5f4f4; font-size: 17px;">
             &copy; 2025 Rizwanul Abidin Asim, Prerana Ramkumar, Fadil Imran, and Adrish Danka. All rights reserved.
             <br>
