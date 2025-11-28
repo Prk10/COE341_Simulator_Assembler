@@ -92,6 +92,30 @@ header p {
     font-weight: 500;
 }
 
+.Feedback {
+    /* Positioning */
+    position: absolute;
+    bottom: 15px;      /* Sits slightly lower than the credits */
+    left: 50%;
+    transform: translateX(-50%); /* Perfect horizontal center */
+    width: 90%;        /* Prevents it from touching edges on small screens */
+    
+    /* Alignment */
+    text-align: center;
+    
+    /* Visual Coherence (Matching .intro-credits) */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: rgba(255, 255, 255, 0.5); /* More transparent than credits */
+    font-size: 15px;   /* Smaller font for "fine print" look */
+    letter-spacing: 0.5px;
+    
+    /* Removing the "Bar" look */
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    z-index: 100;
+}
+
 .section {
     background: white;
     padding: 20px;
