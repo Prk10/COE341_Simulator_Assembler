@@ -271,7 +271,7 @@ function parseProgramContent(content) {
         }
 
         computer.loadProgram(programData);
-        appendToOutput(`Program loaded successfully: ${programData.length} instructions`);
+        appendToOutput(`Program loaded successfully`);
         updateUI();
         viewMemory();
         
@@ -314,7 +314,7 @@ function parseDataContent(content) {
         }
 
         computer.loadData(dataArray);
-        appendToOutput(`Data loaded successfully: ${dataArray.length} words`);
+        appendToOutput(`Data loaded successfully:`);
         updateUI();
         viewMemory();
     } catch (error) {
