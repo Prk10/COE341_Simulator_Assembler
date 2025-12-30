@@ -202,7 +202,7 @@ class Assembler {
                 } else if (instruction === 'HEX') {
                     // HEX pseudo-instruction: store hexadecimal number
                     if (tokenIndex + 1 < tokens.length) {
-                        const value = this.parseNumber(tokens[tokenIndex + 1]);
+                        const value = parseInt(tokens[tokenIndex + 1], 16);
                         if (value !== null) {
                             programData.push({
                                 address: this.locationCounter,

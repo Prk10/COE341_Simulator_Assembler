@@ -1,7 +1,7 @@
 / Sample Assembly Program 1: Simple Addition
 / This program adds two numbers
 
-        ORG 100
+        ORG 200
 START,  LDA NUM1        / Load first number
         ADD NUM2        / Add second number
         STA RESULT      / Store result

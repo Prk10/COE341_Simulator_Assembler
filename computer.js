@@ -601,7 +601,7 @@ class BasicComputer {
             this.EUsed = false;
             this.ALUtransfer = false;
 
-            this.currentMicroOp = `T3: AC ← AC ${(CMA)}`;
+            this.currentMicroOp = `T3: AC ← AC (CMA)`;
             executed = true;
         }
 
@@ -617,7 +617,7 @@ class BasicComputer {
             this.ALUUsed = false;
             this.ALUtransfer = false;
 
-            this.currentMicroOp = `T3: E ← E' ${(CME)}`;
+            this.currentMicroOp = `T3: E ← E' (CME)`;
             executed = true;
         }
 
