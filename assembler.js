@@ -129,7 +129,7 @@ class Assembler {
                 if (instruction === 'ORG') {
                     // ORG sets location counter
                     if (tokenIndex + 1 < tokens.length) {
-                        const address = this.parseNumber(tokens[tokenIndex + 1]);
+                        const address = parseInt(tokens[tokenIndex + 1], 16);
                         if (address !== null && address >= 0 && address < 4096) {
                             this.locationCounter = address;
                         } else {
@@ -176,7 +176,7 @@ class Assembler {
 
                 if (instruction === 'ORG') {
                     if (tokenIndex + 1 < tokens.length) {
-                        const address = this.parseNumber(tokens[tokenIndex + 1]);
+                        const address = parseInt(tokens[tokenIndex + 1], 16);
                         if (address !== null) {
                             this.locationCounter = address;
                         }
