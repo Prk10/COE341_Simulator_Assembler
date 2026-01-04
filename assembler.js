@@ -284,14 +284,19 @@ class Assembler {
     parseNumber(str) {
         str = str.trim();
 
-        // Hexadecimal (starts with 0x or just hex digits A-F)
+        // Hexadecimal explicit (0x...)
         if (str.startsWith('0x') || str.startsWith('0X')) {
             const value = parseInt(str.substring(2), 16);
             return isNaN(value) ? null : value;
         }
 
-        // Try hex first if contains A-F
+        // Hexadecimal implicit (Contains A-F)
         if (/[A-Fa-f]/.test(str)) {
+            // CRITICAL FIX: If it contains non-hex characters (like 'T' in CTR),
+            // it is NOT a number. It is a label.
+            if (/[^0-9A-Fa-f]/.test(str)) {
+                return null; 
+            }
             const value = parseInt(str, 16);
             return isNaN(value) ? null : value;
         }
@@ -299,9 +304,7 @@ class Assembler {
         // Negative decimal
         if (str.startsWith('-')) {
             const value = parseInt(str, 10);
-            if (isNaN(value)) return null;
-            // Convert to 16-bit two's complement
-            return (value & 0xFFFF);
+            return isNaN(value) ? null : (value & 0xFFFF);
         }
 
         // Positive decimal

@@ -44,6 +44,9 @@ class BasicComputer {
 
         // Instruction info
         this.instructionStartCycle = 0;
+
+        this.history = [];
+        this.currentInstructionAddress = 0;
     }
 
     // Reset computer to initial state
@@ -79,6 +82,93 @@ class BasicComputer {
         this.memoryReads = 0;
         this.memoryWrites = 0;
         this.instructionName = '';
+        this.history = [];
+    }
+
+    saveState() {
+        // Limit history to last 100 steps to save memory
+        if (this.history.length > 100) {
+            this.history.shift();
+        }
+
+        const snapshot = {
+            // Memory (Create a copy of the array)
+            memory: [...this.memory], 
+
+            // Registers
+            AR: this.AR, PC: this.PC, DR: this.DR, AC: this.AC,
+            IR: this.IR, TR: this.TR, INPR: this.INPR, OUTR: this.OUTR, SC: this.SC,
+
+            // Flags
+            I: this.I, S: this.S, E: this.E, R: this.R, IEN: this.IEN,
+
+            // Execution State
+            state: this.state,
+            currentInstruction: this.currentInstruction,
+            currentMicroOp: this.currentMicroOp,
+            instructionName: this.instructionName,
+            currentInstructionAddress: this.currentInstructionAddress,
+            
+            // Visual helpers
+            changedComponents: [...this.changedComponents],
+            componentsInInstruction: [...this.componentsInInstruction],
+            
+            // Profiler stats
+            totalCycles: this.totalCycles,
+            instructionsExecuted: this.instructionsExecuted,
+            memoryReads: this.memoryReads,
+            memoryWrites: this.memoryWrites
+        };
+
+        this.history.push(snapshot);
+    }
+
+    
+    undo() {
+        if (this.history.length === 0) return false;
+
+        const snapshot = this.history.pop();
+
+        // Restore Memory
+        this.memory = snapshot.memory;
+
+        // Restore Registers
+        this.AR = snapshot.AR;
+        this.PC = snapshot.PC;
+        this.DR = snapshot.DR;
+        this.AC = snapshot.AC;
+        this.IR = snapshot.IR;
+        this.TR = snapshot.TR;
+        this.INPR = snapshot.INPR;
+        this.OUTR = snapshot.OUTR;
+        this.SC = snapshot.SC;
+
+        // Restore Flags
+        this.I = snapshot.I;
+        this.S = snapshot.S;
+        this.E = snapshot.E;
+        this.R = snapshot.R;
+        this.IEN = snapshot.IEN;
+
+        // Restore State
+        this.state = snapshot.state;
+        this.currentInstruction = snapshot.currentInstruction;
+        this.currentMicroOp = snapshot.currentMicroOp;
+        this.instructionName = snapshot.instructionName;
+        
+        // Restore Visuals
+        this.changedComponents = snapshot.changedComponents;
+        this.componentsInInstruction = snapshot.componentsInInstruction;
+
+        // Restore Profiler
+        this.totalCycles = snapshot.totalCycles;
+        this.instructionsExecuted = snapshot.instructionsExecuted;
+        this.memoryReads = snapshot.memoryReads;
+        this.memoryWrites = snapshot.memoryWrites;
+
+        this.currentInstructionAddress = snapshot.currentInstructionAddress;
+
+        return true;
     }
 
     // Load program into memory
@@ -200,6 +290,7 @@ class BasicComputer {
         this
         this.changedComponents = ['AR'];
         this.componentsInInstruction = ['PC', 'AR'];
+        this.currentInstructionAddress = this.PC;
 
         this.componentsToClear = [];
         this.componentsToIncrement = [];

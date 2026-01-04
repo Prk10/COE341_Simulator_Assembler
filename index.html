@@ -159,7 +159,7 @@
                         <div class="loaded-program-view" style="margin-top: 20px;">
                             <h4>Loaded Program:</h4>
                             <pre id="loaded-program-display" class="program-code" 
-                                style="height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px;"></pre>
+                                style="position:relative; height: 200px; overflow-y: scroll; border: 1px solid #ccc; padding: 5px;"></pre>
                         </div>
                     </div>
 
@@ -169,12 +169,15 @@
                             <button class="btn-primary" onclick="executeNextCycle()">Next Cycle</button>
                             <button class="btn-primary" onclick="executeFastCycle()">Fast Cycle (N)</button>
                             <input type="number" id="fast-cycle-n" value="5" min="1" style="width:60px;">
-
+                        
                             <button class="btn-secondary" onclick="executeNextInstruction()">Next Instruction</button>
                             <button class="btn-secondary" onclick="executeFastInstruction()">Fast Instruction (N)</button>
                             <input type="number" id="fast-inst-n" value="5" min="1" style="width:60px;">
-
+                        
                             <button class="btn-success" onclick="executeRun()">Run (Until HLT)</button>
+                            
+                            <button onclick="executeUndo()" style="background-color: #ed8936; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 14px;">Undo</button>
+                            
                             <button class="btn-danger" onclick="executeReset()">Reset</button>
                         </div>
                     </div>

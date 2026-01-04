@@ -133,9 +133,19 @@ function displayLoadedProgram(programText) {
     const lines = programText.trim().split('\n');
 
     lines.forEach((line, index) => {
-        const lineElement = document.createElement('div');
+        const lineElement = document.createElement('div'); 
         lineElement.classList.add('program-line');
-        lineElement.dataset.address = line.trim().split(' ')[0];
+        
+        
+        lineElement.style.display = "block"; 
+        lineElement.style.minHeight = "20px"; 
+        
+        
+        const addressPart = line.trim().split(/\s+/)[0];
+        if (addressPart) {
+             lineElement.dataset.address = addressPart;
+        }
+       
         lineElement.textContent = line;
         displayArea.appendChild(lineElement);
     });
@@ -201,31 +211,29 @@ function loadAssemblyFile() {
     reader.readAsText(file);
 }
 
-function highlightCurrentInstruction(currentPC) {
+function highlightCurrentInstruction(currentAddress) {
     const displayArea = document.getElementById('loaded-program-display');
     if (!displayArea) return;
 
-    // Remove highlight from ALL previously active lines
+    
     const activeLine = displayArea.querySelector('.program-line-active');
     if (activeLine) {
         activeLine.classList.remove('program-line-active');
     }
 
-    // Format the PC value to match the address format
-    const pcHex = currentPC.toString(16).toUpperCase().padStart(3, '0');
-
-    // Find the new line to highlight
+    
+    const pcHex = currentAddress.toString(16).toUpperCase().padStart(3, '0');
     const newLineToHighlight = displayArea.querySelector(`[data-address="${pcHex}"]`);
 
-    // Apply the highlight class
+    
     if (newLineToHighlight) {
         newLineToHighlight.classList.add('program-line-active');
 
-        const containerHeight = displayArea.clientHeight;
-        const lineTop = newLineToHighlight.offsetTop;
-        const lineHeight = newLineToHighlight.clientHeight;
         
-        displayArea.scrollTop = lineTop - (containerHeight / 2) + (lineHeight / 2);
+        const relativeTop = newLineToHighlight.offsetTop - displayArea.offsetTop;
+        
+        
+        displayArea.scrollTop = relativeTop - (displayArea.clientHeight / 2) + (newLineToHighlight.clientHeight / 2);
     }
 }
 
@@ -324,6 +332,7 @@ function parseDataContent(content) {
 
 // Execution Control Functions
 function executeNextCycle() {
+    computer.saveState();
     const result = computer.executeCycle();
     const componentsToHighlight = computer.componentsInInstruction;
     const componentsToIncrement = computer.componentsToIncrement;
@@ -335,10 +344,11 @@ function executeNextCycle() {
     highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
 
     // Get the PC value
-    const currentPC = computer.PC; 
+    //const currentPC = computer.PC; 
     
     // Highlight the current instruction running
-    highlightCurrentInstruction(currentPC - 1); 
+    //highlightCurrentInstruction(currentPC - 1); 
+    highlightCurrentInstruction(computer.currentInstructionAddress);
 
     if (!result) {
         appendToOutput('Computer halted');
@@ -346,6 +356,7 @@ function executeNextCycle() {
 }
 
 function executeFastCycle() {
+    computer.saveState()
     const n = parseInt(document.getElementById('fast-cycle-n').value) || 5;
 
     for (let i = 0; i < n; i++) {
@@ -367,15 +378,17 @@ function executeFastCycle() {
     highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
 
     // Get the PC value
-    const currentPC = computer.PC; 
+    //const currentPC = computer.PC; 
     
     // Highlight the current instruction running
-    highlightCurrentInstruction(currentPC - 1); 
+    //highlightCurrentInstruction(currentPC - 1); 
+    highlightCurrentInstruction(computer.currentInstructionAddress);
 
     appendToOutput(`Executed ${n} cycles`);
 }
 
 function executeNextInstruction() {
+    computer.saveState();
     const result = computer.executeInstruction();
     const componentsToHighlight = computer.componentsInInstruction;
     const componentsToIncrement = computer.componentsToIncrement;
@@ -387,10 +400,12 @@ function executeNextInstruction() {
     highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
 
     // Get the PC value
-    const currentPC = computer.PC; 
+    //const currentPC = computer.PC; 
     
     // Highlight the current instruction running
-    highlightCurrentInstruction(currentPC - 1); 
+    //highlightCurrentInstruction(currentPC - 1); 
+
+    highlightCurrentInstruction(computer.currentInstructionAddress);
 
     if (!result) {
         appendToOutput('Computer halted');
@@ -418,7 +433,8 @@ function executeFastInstruction() {
 
     updateUI();
     highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
-    highlightCurrentInstruction(currentPC - 1); 
+    //highlightCurrentInstruction(currentPC - 1); 
+    highlightCurrentInstruction(computer.currentInstructionAddress);
     appendToOutput(`Executed ${n} instructions`);
 }
 
@@ -436,7 +452,8 @@ function executeRun() {
 
     updateUI();
     highlightTransfer(componentsToHighlight[0], componentsToHighlight[1], componentsToIncrement[0], componentsToClear[0], ALUUsed, EUsed, ALUTransfer);
-    highlightCurrentInstruction(currentPC - 1); 
+    //highlightCurrentInstruction(currentPC - 1); 
+    highlightCurrentInstruction(computer.currentInstructionAddress);
 
     if (result) {
         appendToOutput(`Program executed successfully in ${endTime - startTime}ms`);
@@ -467,6 +484,8 @@ function executeReset() {
         computer.currentMicroOp = "T0: AR <- PC";
         computer.state = 'FETCH'; 
         computer.PC = originalProgramData[0].address;
+
+        computer.currentInstructionAddress = computer.PC;
     }
 
 
@@ -475,7 +494,8 @@ function executeReset() {
     resetAnimations(); // Resets the Datapath animation
     
     // Force Highlight to First Instruction (Address 0)
-    highlightCurrentInstruction(0);
+    //highlightCurrentInstruction(0);
+    highlightCurrentInstruction(computer.currentInstructionAddress);
 
     // Scroll the program list to the top
     const displayArea = document.getElementById('loaded-program-display');
@@ -815,6 +835,36 @@ function switchView(viewName) {
         // Update Buttons
         if(btnSim) btnSim.classList.remove('active');
         if(btnAsm) btnAsm.classList.add('active');
+    }
+}
+
+function executeUndo() {
+    if (computer.undo()) {
+        updateUI();
+        
+        
+        highlightTransfer(
+            computer.componentsInInstruction[0], 
+            computer.componentsInInstruction[1], 
+            computer.componentsToIncrement[0], 
+            computer.componentsToClear[0], 
+            computer.ALUUsed, 
+            computer.EUsed, 
+            computer.ALUtransfer
+        );
+
+        
+        if (computer.PC > 0) {
+             
+             highlightCurrentInstruction(computer.PC - 1);
+        } else {
+             highlightCurrentInstruction(0);
+        }
+
+        viewMemory(); 
+        appendToOutput("Undid last step.");
+    } else {
+        appendToOutput("Nothing to undo (History empty).");
     }
 }
 

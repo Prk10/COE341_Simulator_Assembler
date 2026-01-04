@@ -1,0 +1,29 @@
+        / Main program
+        BSA MVE          / Branch to subroutine
+        HEX 100          / 1st address of source data
+        HEX 200          / 1st address of destination data
+        DEC -16          / Number of items to move
+        HLT
+
+MVE,    HEX 0            / Subroutine MVE
+        LDA MVE I        / Bring address of source
+        STA PT1          / Store in 1st pointer
+        ISZ MVE          / Increment return address
+        LDA MVE I        / Bring address of destination
+        STA PT2          / Store in 2nd pointer
+        ISZ MVE          / Increment return address
+        LDA MVE I        / Bring number of items
+        STA CTR          / Store in counter
+        ISZ MVE          / Increment return address
+
+LOP,    LDA PT1 I        / Load source item
+        STA PT2 I        / Store in destination
+        ISZ PT1          / Increment source pointer
+        ISZ PT2          / Increment destination pointer
+        ISZ CTR          / Increment counter
+        BUN LOP          / Repeat 16 times
+        BUN MVE I        / Return to main program
+
+PT1,    HEX 0
+PT2,    HEX 0
+CTR,    HEX 0
